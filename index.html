@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>香港扣账卡境外提款收费对比</title>
+<title>香港借记卡境外提款收费对比</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -493,7 +493,7 @@ h1 span{background:linear-gradient(130deg,var(--acc),var(--acc2)); -webkit-backg
         <span class="hero-icon">🏧</span>
         Hong Kong Debit Card
       </div>
-      <h1>香港扣账卡<span>境外提款</span>收费对比</h1>
+      <h1>香港借记卡<span>境外提款</span>收费对比</h1>
       <p class="hero-sub">根据各银行公开资料整理，仅供参考，请以银行官网为准</p>
     </div>
     <div class="theme-ctrl" id="theme-ctrl">
@@ -515,12 +515,16 @@ h1 span{background:linear-gradient(130deg,var(--acc),var(--acc2)); -webkit-backg
     <div class="step">Step 1 — 选择银行</div>
     <div class="bank-grid" id="bank-grid"></div>
   </div>
-  <div class="card cp" id="tier-card" style="display:none">
-    <div class="step">Step 2 — 选择户口类别</div>
+  <div class="card cp" id="card-type-card" style="display:none">
+    <div class="step">Step 2 — 选择银行卡类型</div>
+    <div class="tier-row" id="card-type-row"></div>
+  </div>
+  <div class="card cp" id="tier-account" style="display:none">
+    <div class="step">Step 3 — 选择户口类别</div>
     <div class="tier-row" id="tier-row"></div>
   </div>
   <div class="card cp" id="bank-res-card" style="display:none">
-    <div class="step">Step 3 — 各ATM收费情况</div>
+    <div class="step">Step 4 — 各ATM收费情况</div>
     <div class="res-bar" id="bank-res-bar"></div>
     <div class="atm-bento" id="atm-bento"></div>
     <div class="result-note" id="bank-res-note" style="display:none"></div>
@@ -578,7 +582,7 @@ applyTheme();
 // ── Data ─────────────────────────────────────────────
 const ATM_TYPES = [
   { key:'hkBankTong',    label:'香港银通', icon:'icon/Jetco_logo.svg', iconKind:'svg' },
-  { key:'hkHSBCHS',      label:'香港汇丰/恒生', icons:['icon/汇丰银行.svg','icon/Hang_Seng_Bank.svg'], iconKind:'pair' },
+  { key:'hkHSBCHS',      label:'香港汇丰 / 恒生', icons:['icon/汇丰银行.svg','icon/Hang_Seng_Bank.svg'], iconKind:'pair' },
   { key:'macauBankTong', label:'澳门银通', icon:'icon/Jetco_logo.svg', iconKind:'svg' },
   { key:'macauOther',    label:'澳门其他', icon:'icon/Flag_of_Macau.svg', iconKind:'svg' },
   { key:'mainland',      label:'内地ATM', icon:'icon/UnionPay_logo.svg', iconKind:'svg' },
@@ -588,6 +592,9 @@ const BANK_LOGOS = {
   hsbc: 'icon/汇丰银行.svg',
   hase: 'icon/Hang_Seng_Bank.svg',
   bochk: 'icon/中国银行.svg',
+  icbc: 'icon/工商银行.svg',
+  ccb: 'icon/建设银行.svg',
+  ncb: 'icon/南洋商业银行.svg',
   scb: 'icon/渣打银行.svg',
   bea: 'icon/东亚银行.svg',
   dahsing: 'icon/大新银行.svg',
@@ -601,53 +608,608 @@ const BANK_LOGOS = {
   bdo: 'icon/东莞银行.svg',
 };
 const BANKS = [
-  { id:'hsbc', name:'汇丰银行', tiers:[
-    { label:'普通客户', fees:{ hkBankTong:{s:'fee'}, hkHSBCHS:{s:'free'}, macauBankTong:{s:'fee'}, macauOther:{s:'limited',n:'仅汇丰ATM免费'}, mainland:{s:'limited',n:'仅汇丰恒生ATM免费'}, overseas:{s:'limited',n:'仅汇丰ATM免费'} }, note:'不含ATM Fee' },
-    { label:'卓越理财', fees:{ hkBankTong:{s:'fee'}, hkHSBCHS:{s:'free'}, macauBankTong:{s:'free'}, macauOther:{s:'free'}, mainland:{s:'free'}, overseas:{s:'free'} }, note:'不含ATM Fee' },
-    { label:'卓越理财尊尚/环球私人银行', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'free'}, macauBankTong:{s:'free'}, macauOther:{s:'free'}, mainland:{s:'free'}, overseas:{s:'free'} }, note:'包含ATM Fee' },
-  ]},
-  { id:'hase', name:'恒生银行', tiers:[
-    { label:'普通客户', fees:{hkBankTong:{s:'fee'}, hkHSBCHS:{s:'free'}, macauBankTong:{s:'fee'}, macauOther:{s:'limited',n:'仅汇丰ATM免费'}, mainland:{s:'limited',n:'仅汇丰恒生ATM免费'}, overseas:{s:'limited',n:'仅汇丰ATM免费'} }, note:'不含ATM Fee' },
-    { label:'优越理财', fees:{ hkBankTong:{s:'fee'}, hkHSBCHS:{s:'free'}, macauBankTong:{s:'free'}, macauOther:{s:'free'}, mainland:{s:'free'}, overseas:{s:'free'} }, note:'不含ATM Fee' },
-    { label:'优越私人理财/私人银行', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'free'}, macauBankTong:{s:'free'}, macauOther:{s:'free'}, mainland:{s:'free'}, overseas:{s:'free'} }, note:'包含ATM Fee' },
-  ]},
-  { id:'bochk', name:'中国银行（香港）', tiers:[
-    { label:'所有客户',    fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'fee'}, macauBankTong:{s:'fee'}, macauOther:{s:'free'}, mainland:{s:'fee'}, overseas:{s:'free'} }},
-  ]},
-  { id:'scb', name:'渣打银行', tiers:[
-    { label:'普通客户', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'fee'}, macauBankTong:{s:'fee'}, macauOther:{s:'fee'}, mainland:{s:'fee'}, overseas:{s:'fee'} }},
-    { label:'Premium理财及以上', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'free'}, macauBankTong:{s:'free'}, macauOther:{s:'ftf',n:'免手续费但有FTF'}, mainland:{s:'free'}, overseas:{s:'currency',n:'仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元'} }},
-  ]},
-  { id:'bea', name:'东亚银行', tiers:[
-    { label:'所有客户', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'fee'}, macauBankTong:{s:'ftf',n:'不明确是否收费，且有FTF'}, macauOther:{s:'ftf',n:'免手续费但有FTF'}, mainland:{s:'free'}, overseas:{s:'currency',n:'仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元'} }},
-  ]},
-  { id:'dahsing', name:'大新银行', tiers:[
-    { label:'所有客户', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'free'}, macauBankTong:{s:'ftf',n:'免手续费但有FTF'}, macauOther:{s:'ftf',n:'免手续费但有FTF'}, mainland:{s:'free'}, overseas:{s:'currency',n:'仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元'} }},
-  ]},
-  { id:'cncbi', name:'信银国际', tiers:[
-    { label:'所有客户', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'free'}, macauBankTong:{s:'free'}, macauOther:{s:'free'}, mainland:{s:'free'}, overseas:{s:'currency',n:'仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元'} }},
-  ]},
-  { id:'citi', name:'花旗银行', tiers:[
-    { label:'所有客户', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'fee'}, macauBankTong:{s:'ftf',n:'免手续费但有FTF'}, macauOther:{s:'ftf',n:'免手续费但有FTF'}, mainland:{s:'free'}, overseas:{s:'currency',n:'仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元、泰铢'} }},
-  ]},
-  { id:'dbs', name:'星展银行', tiers:[
-    { label:'所有客户', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'fee'}, macauBankTong:{s:'fee'}, macauOther:{s:'fee'}, mainland:{s:'fee'}, overseas:{s:'fee'} }},
-  ]},
-  { id:'za', name:'众安银行', tiers:[
-    { label:'所有客户', fees:{ hkBankTong:{s:'free',n:'每月80000 HKD免费额度，超出收取1%手续费'}, hkHSBCHS:{s:'free',n:'每月80000 HKD免费额度，超出收取1%手续费'}, macauBankTong:{s:'fee'}, macauOther:{s:'fee'}, mainland:{s:'fee'}, overseas:{s:'fee'} }},
-  ]},
-  { id:'airstar', name:'象象银行', tiers:[
-    { label:'所有客户', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'free'}, macauBankTong:{s:'fee'}, macauOther:{s:'fee'}, mainland:{s:'fee'}, overseas:{s:'fee'} }},
-  ]},
-  { id:'welab', name:'汇立银行', tiers:[
-    { label:'所有客户', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'fee'}, macauBankTong:{s:'fee'}, macauOther:{s:'fee'}, mainland:{s:'fee'}, overseas:{s:'fee'} }},
-  ]},
-  { id:'mox', name:'  Mox Bank', tiers:[
-    { label:'所有客户', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'fee'}, macauBankTong:{s:'fee'}, macauOther:{s:'fee'}, mainland:{s:'fee'}, overseas:{s:'fee'} }},
-  ]},
-  { id:'bdo', name:'东莞银行（国际）', tiers:[
-    { label:'所有客户', fees:{ hkBankTong:{s:'free'}, hkHSBCHS:{s:'fee'}, macauBankTong:{s:'fee'}, macauOther:{s:'fee'}, mainland:{s:'fee'}, overseas:{s:'fee'} }},
-  ]},
+  { 
+    id: 'hsbc', 
+    name: '汇丰银行', 
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers: [
+          {
+            label: '普通客户',
+            fees: {
+              hkBankTong:{s:'fee',n:'每次25港元'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'fee',n:'每次40港元'},
+              macauOther:{s:'limited',n:'仅汇丰ATM免费<br>其余每次40港元'},
+              mainland:{s:'limited',n:'仅汇丰恒生ATM免费<br>其余每次40港元'},
+              overseas:{s:'limited',n:'仅汇丰ATM免费<br>其余每次40港元'}
+            },
+            note: '不含ATM Fee'
+          },
+          {
+            label: '卓越理财',
+            fees: {
+              hkBankTong:{s:'fee',n:'每次25港元'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'free'},
+              macauOther:{s:'free'},
+              mainland:{s:'free'},
+              overseas:{s:'free'}
+            },
+            note: '不含ATM Fee'
+          },
+          {
+            label:'卓越理财尊尚 / 环球私人银行',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'free'},
+              macauOther:{s:'free'},
+              mainland:{s:'free'},
+              overseas:{s:'free'}
+            },
+            note:'包含ATM Fee'
+          }
+        ]
+      },
+      {
+        id: 'atm',
+        label: '银联提款卡',
+        tiers: [
+          { 
+            label: '普通客户',
+            fees: {
+              hkBankTong:{s:'fee',n:'每次15港元'},
+              hkHSBCHS:{s:'free'}, macauBankTong:{s:'fee',n:'每次50港元'},
+              macauOther:{s:'fee',n:'汇丰ATM每次20港元<br>其余每次50港元'},
+              mainland:{s:'fee',n:'汇丰恒生ATM每次20港元<br>其余每次50港元'},
+              overseas:{s:'fee',n:'汇丰ATM每次20港元<br>其余每次50港元'}
+            },
+            note: '不含ATM Fee'
+          },
+          {
+            label: '卓越理财 / 卓越理财尊尚 / 环球私人银行',
+            fees: {
+              hkBankTong:{s:'fee',n:'每次15港元'},
+              hkHSBCHS:{s:'free'}, macauBankTong:{s:'fee',n:'每次50港元'},
+              macauOther:{s:'limited',n:'仅汇丰ATM免费<br>其余每次50港元'},
+              mainland:{s:'limited',n:'仅汇丰恒生ATM免费<br>其余每次50港元'},
+              overseas:{s:'limited',n:'仅汇丰ATM免费<br>其余每次50港元'}
+            },
+            note: '不含ATM Fee'
+          }
+        ]
+      }
+    ]
+  },
+  { 
+    id: 'hase', 
+    name: '恒生银行', 
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers: [
+          {
+            label: '普通客户',
+            fees: {
+              hkBankTong:{s:'fee',n:'每次25港元'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'fee',n:'每次40港元'},
+              macauOther:{s:'limited',n:'仅汇丰ATM免费<br>其余每次40港元'},
+              mainland:{s:'limited',n:'仅汇丰恒生ATM免费<br>其余每次40港元'},
+              overseas:{s:'limited',n:'仅汇丰ATM免费<br>其余每次40港元'}
+            },
+            note: '不含ATM Fee'
+          },
+          {
+            label: '优越理财',
+            fees: {
+              hkBankTong:{s:'fee',n:'每次25港元'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'free'},
+              macauOther:{s:'free'},
+              mainland:{s:'free'},
+              overseas:{s:'free'}
+            },
+            note: '不含ATM Fee'
+          },
+          {
+            label:'优越私人理财 / 私人银行',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'free'},
+              macauOther:{s:'free'},
+              mainland:{s:'free'},
+              overseas:{s:'free'}
+            },
+            note:'包含ATM Fee'
+          }
+        ]
+      },
+      {
+        id: 'atm',
+        label: '银联提款卡',
+        tiers: [
+          { 
+            label: '普通客户',
+            fees: {
+              hkBankTong:{s:'fee',n:'每次15港元'},
+              hkHSBCHS:{s:'free'}, macauBankTong:{s:'fee',n:'每次50港元'},
+              macauOther:{s:'fee',n:'汇丰ATM每次20港元<br>其余每次50港元'},
+              mainland:{s:'fee',n:'汇丰恒生ATM每次20港元<br>其余每次50港元'},
+              overseas:{s:'fee',n:'汇丰ATM每次20港元<br>其余每次50港元'}
+            },
+            note: '不含ATM Fee'
+          },
+          {
+            label: '优越理财 / 优越私人理财 / 私人银行',
+            fees: {
+              hkBankTong:{s:'fee',n:'每次15港元'},
+              hkHSBCHS:{s:'free'}, macauBankTong:{s:'fee',n:'每次50港元'},
+              macauOther:{s:'limited',n:'仅汇丰ATM免费<br>其余每次50港元'},
+              mainland:{s:'limited',n:'仅汇丰恒生ATM免费<br>其余每次50港元'},
+              overseas:{s:'limited',n:'仅汇丰ATM免费<br>其余每次50港元'}
+            },
+            note: '不含ATM Fee'
+          }
+        ]
+      }
+    ]
+  },
+  { 
+    id: 'bochk', 
+    name: '中国银行（香港）', 
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers: [
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'通过港元账户每次25港元<br>通过人民币账户每次25人民币'},
+              macauBankTong:{s:'fee',n:'每次20港元'},
+              macauOther:{s:'free'},
+              mainland:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              overseas:{s:'free'}
+            }
+          }
+        ]
+      },
+      {
+        id: 'atm',
+        label: '银联提款卡',
+        tiers: [
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'通过港元账户每次15港元<br>通过人民币账户每次15人民币'},
+              macauBankTong:{s:'fee',n:'每次20港元'},
+              macauOther:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              mainland:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              overseas:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  { 
+    id: 'icbc', 
+    name: '中国工商银行（亚洲）', 
+    cardTypes: [
+      {
+        id: 'atm',
+        label: '银联提款卡',
+        tiers: [
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'通过港元账户每次15港元<br>通过人民币账户每次15人民币'},
+              macauBankTong:{s:'fee',n:'每次10港元'},
+              macauOther:{s:'fee',n:'通过港元账户每次15港元<br>通过人民币账户每次15人民币'},
+              mainland:{s:'limited',n:'工商银行ATM免费<br>通过港元账户每次15港元<br>通过人民币账户每次15人民币'},
+              overseas:{s:'fee',n:'通过港元账户每次15港元<br>通过人民币账户每次15人民币'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  { 
+    id: 'ccb', 
+    name: '中国建设银行（亚洲）', 
+    cardTypes: [
+      {
+        id: 'atm',
+        label: '银联提款卡',
+        tiers: [
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'通过港元账户每次15港元<br>通过人民币账户每次15人民币'},
+              macauBankTong:{s:'limited',n:'建设银行ATM免费<br>其余每次25港元'},
+              macauOther:{s:'fee',n:'通过港元账户每次15港元<br>通过人民币账户每次15人民币'},
+              mainland:{s:'limited',n:'建设银行ATM免费<br>通过港元账户每次15港元<br>通过人民币账户每次15人民币'},
+              overseas:{s:'fee',n:'通过港元账户每次15港元<br>通过人民币账户每次15人民币'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  { 
+    id: 'ncb', 
+    name: '南洋商业银行', 
+    cardTypes: [
+      {
+        id: 'atm',
+        label: '银联提款卡',
+        tiers: [
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'通过港元账户每次15港元<br>通过人民币账户每次15人民币'},
+              macauBankTong:{s:'fee',n:'每次20港元'},
+              macauOther:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              mainland:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              overseas:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id:'scb',
+    name:'渣打银行', 
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers: [
+          {
+            label:'普通客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee'},
+              macauBankTong:{s:'fee'},
+              macauOther:{s:'fee'},
+              mainland:{s:'fee'},
+              overseas:{s:'fee'}
+            }
+          },
+          {
+            label:'Premium 理财及以上',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'free'},
+              macauOther:{s:'ftf',n:'免手续费但有 0.95% FTF'},
+              mainland:{s:'free'},
+              overseas:{s:'currency',n:'仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 0.95% FTF'}
+            }
+          }
+        ]
+      },
+      {
+        id: 'atm',
+        label: '银联提款卡',
+        tiers: [
+          {
+            label:'普通客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'每次15港元'},
+              macauBankTong:{s:'fee',n:'每次15港元 + 0.5% FTF'},
+              macauOther:{s:'fee',n:'每次15港元 + 0.5% FTF'},
+              mainland:{s:'fee',n:'每次15港元 + 0.5% FTF'},
+              overseas:{s:'fee',n:'每次15港元 + 0.5% FTF'}
+            }
+          },
+          {
+            label:'Premium 理财及以上',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'每次15港元'},
+              macauBankTong:{s:'ftf',n:'免手续费但有 0.5% FTF'},
+              macauOther:{s:'ftf',n:'免手续费但有 0.5% FTF'},
+              mainland:{s:'ftf',n:'免手续费但有 0.5% FTF'},
+              overseas:{s:'ftf',n:'免手续费但有 0.5% FTF'}
+            }
+          }
+        ]
+      },
+    ]
+  },
+  {
+    id:'bea',
+    name:'东亚银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'每次30港元'},
+              macauBankTong:{s:'ftf',n:'不明确是否收费，且有 FTF'},
+              macauOther:{s:'ftf',n:'免手续费但有 FTF'},
+              mainland:{s:'free'},
+              overseas:{s:'currency',n:'仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 1.95% FTF'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id:'dahsing',
+    name:'大新银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'ftf',n:'免手续费但有FTF'},
+              macauOther:{s:'ftf',n:'免手续费但有FTF'},
+              mainland:{s:'free'},
+              overseas:{s:'currency',n:'仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 1.95% FTF'}
+            }
+          }
+        ]
+      },
+      {
+        id: 'atm',
+        label: '银联提款卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'每次20港元'},
+              macauBankTong:{s:'fee',n:'每次28港元'},
+              macauOther:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              mainland:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              overseas:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id:'cncbi',
+    name:'信银国际',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'free'},
+              macauOther:{s:'free'},
+              mainland:{s:'free'},
+              overseas:{s:'currency',n:'仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 1.95% FTF'}
+            }
+          }
+        ]
+      },
+      {
+        id: 'atm',
+        label: '银联提款卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'fee',n:'每次25港元'},
+              macauOther:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              mainland:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              overseas:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id:'citi',
+    name:'花旗银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee'},
+              macauBankTong:{s:'ftf',n:'免手续费但有FTF'},
+              macauOther:{s:'ftf',n:'免手续费但有FTF'},
+              mainland:{s:'free'},
+              overseas:{s:'currency',n:'仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元、泰铢'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id:'dbs',
+    name:'星展银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: '银联扣账卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'免手续费但有FTF'},
+              macauBankTong:{s:'fee',n:'每次25港元'},
+              macauOther:{s:'fee',n:'每次50港元'},
+              mainland:{s:'fee',n:'每次50港元'},
+              overseas:{s:'fee',n:'每次50港元'}
+            }
+          }
+        ]
+      },
+      {
+        id: 'atm',
+        label: '银联提款卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'免手续费但有FTF'},
+              macauBankTong:{s:'fee',n:'每次25港元'},
+              macauOther:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              mainland:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'},
+              overseas:{s:'fee',n:'通过港元账户每次50港元<br>通过人民币账户每次50人民币'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id:'za',
+    name:'众安银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'Visa 扣账卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free',n:'每月80000 HKD免费额度，超出收取1%手续费'},
+              hkHSBCHS:{s:'free',n:'每月80000 HKD免费额度，超出收取1%手续费'},
+              macauBankTong:{s:'fee',n:'每次50港元 + 0.5% FTF'},
+              macauOther:{s:'fee',n:'每次50港元 + 0.5% FTF'},
+              mainland:{s:'fee',n:'每次50港元 + 0.5% FTF'},
+              overseas:{s:'fee',n:'每次50港元 + 0.5% FTF'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id:'airstar',
+    name:'象象银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'Visa 扣账卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'free'},
+              macauBankTong:{s:'fee',n:'每笔交易金额 3% + 0.5% FTF'},
+              macauOther:{s:'fee',n:'每笔交易金额 3% + 0.5% FTF'},
+              mainland:{s:'fee',n:'每笔交易金额 3% + 0.5% FTF'},
+              overseas:{s:'fee',n:'每笔交易金额 3% + 0.5% FTF'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id:'welab',
+    name:'汇立银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{
+              hkBankTong:{s:'free'},
+              hkHSBCHS:{s:'fee',n:'每笔交易金额 1%，最低10港元'},
+              macauBankTong:{s:'fee',n:'每笔交易金额 1.5%，最低25港元'},
+              macauOther:{s:'fee',n:'每笔交易金额 1.5%，最低25港元'},
+              mainland:{s:'fee',n:'每笔交易金额 1.5%，最低25港元'},
+              overseas:{s:'fee',n:'每笔交易金额 1.5%，最低25港元'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id:'mox',
+    name:'  Mox Bank',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers:[
+          {
+            label:'所有客户',
+            fees:{ hkBankTong:{s:'free'},
+            hkHSBCHS:{s:'fee',n:'每次20港元'},
+            macauBankTong:{s:'fee',n:'每次30港元'},
+            macauOther:{s:'fee',n:'每次30港元 + 1.95% FTF'},
+            mainland:{s:'fee',n:'每次30港元 + 1.95% FTF'},
+            overseas:{s:'fee',n:'每次30港元 + 1.95% FTF'}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id:'bdo',
+    name:'东莞银行（国际）',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard / 银联扣账卡',
+        tiers:[
+          { label:'所有客户',
+          fees:{
+            hkBankTong:{s:'free'},
+            hkHSBCHS:{s:'fee',n:'每次25港元'},
+            macauBankTong:{s:'fee',n:'每次20港元'},
+            macauOther:{s:'fee',n:'每次50港元'},
+            mainland:{s:'fee',n:'每次50港元'},
+            overseas:{s:'fee',n:'每次50港元'}
+            }
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 // 修正映射字典，新增 currency 紫色状态
@@ -681,48 +1243,84 @@ function switchTab(id) {
 }
 
 // ── Panel 1: Bank ─────────────────────────────────────
-let curBank = null, curTier = null;
+let curBank = null;
+let curCardType = null;
+let curTier = null;
 
 function initBankGrid() {
   document.getElementById('bank-grid').innerHTML = BANKS.map(b =>
-    `<button class="bank-btn" data-id="${b.id}" onclick="selBank('${b.id}')"><span class="bank-btn-in">${renderBankLogo(b)}<span>${b.name}</span></span></button>`
+    `<button class="bank-btn" data-id="${b.id}" onclick="selBank('${b.id}')">
+      <span class="bank-btn-in">${renderBankLogo(b)}<span>${b.name}</span></span>
+     </button>`
   ).join('');
 }
 
+// 1. 选择银行
 function selBank(id) {
   curBank = BANKS.find(b => b.id === id);
-  curTier = curBank.tiers.length === 1 ? curBank.tiers[0] : null;
+  curCardType = null;
+  curTier = null;
   document.querySelectorAll('.bank-btn').forEach(b => b.classList.toggle('active', b.dataset.id === id));
-  const tc = document.getElementById('tier-card');
-  if (curBank.tiers.length > 1) {
-    tc.style.display = '';
-    document.getElementById('tier-row').innerHTML = curBank.tiers.map((t, i) =>
-      `<button class="tier-btn" onclick="pickTier(${i})">${t.label}</button>`).join('');
-    document.getElementById('bank-res-card').style.display = 'none';
+  const ctc = document.getElementById('card-type-card');
+  const tc = document.getElementById('tier-account');
+  const res = document.getElementById('bank-res-card');
+  tc.style.display = 'none';
+  res.style.display = 'none';
+  document.getElementById('card-type-row').innerHTML = curBank.cardTypes.map((c, i) =>
+    `<button class="tier-btn" onclick="pickCardType(${i})">${c.label}</button>`
+  ).join('');
+  if (curBank.cardTypes.length > 1) {
+    ctc.style.display = '';
+    setTimeout(() => ctc.scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
   } else {
-    tc.style.display = 'none';
-    renderBankResult();
+    ctc.style.display = 'none';
+    pickCardType(0);
   }
-  setTimeout(() => document.getElementById('tier-card').style.display !== 'none'
-    ? document.getElementById('tier-card').scrollIntoView({behavior:'smooth',block:'nearest'})
-    : document.getElementById('bank-res-card').scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
 }
 
+// 2. 选择卡类型
+function pickCardType(i) {
+  curCardType = curBank.cardTypes[i];
+  curTier = null;
+  const btns = document.getElementById('card-type-row').querySelectorAll('.tier-btn');
+  btns.forEach((b, j) => b.classList.toggle('active', j === i));
+  const tc = document.getElementById('tier-account');
+  if (curCardType.tiers.length > 1) {
+    tc.style.display = '';
+    document.getElementById('tier-row').innerHTML = curCardType.tiers.map((t, index) =>
+      `<button class="tier-btn" onclick="pickTier(${index})">${t.label}</button>`
+    ).join('');
+    document.getElementById('bank-res-card').style.display = 'none';
+    setTimeout(() => tc.scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
+  } else {
+    tc.style.display = 'none';
+    curTier = curCardType.tiers[0];
+    renderBankResult();
+  }
+}
+
+// 3. 选择户口类别
 function pickTier(i) {
-  curTier = curBank.tiers[i];
-  document.querySelectorAll('.tier-btn').forEach((b, j) => b.classList.toggle('active', j === i));
+  curTier = curCardType.tiers[i];
+  const btns = document.getElementById('tier-row').querySelectorAll('.tier-btn');
+  btns.forEach((b, j) => b.classList.toggle('active', j === i));
   renderBankResult();
   setTimeout(() => document.getElementById('bank-res-card').scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
 }
 
+// 4. 渲染结果
 function renderBankResult() {
-  if (!curTier) return;
+  if (!curTier || !curCardType) return;
+  
   document.getElementById('bank-res-card').style.display = '';
   const fc = ATM_TYPES.filter(a => (curTier.fees[a.key]||{s:'fee'}).s === 'free').length;
+  
   document.getElementById('bank-res-bar').innerHTML =
     `<span class="res-chip">${renderBankLogo(curBank, 'res-chip-logo')}${curBank.name}</span>
+     <span class="res-chip">${curCardType.label}</span>
      <span class="res-chip">${curTier.label}</span>
      <span class="res-stat">免费覆盖 <strong>${fc}</strong> / ${ATM_TYPES.length} 类ATM</span>`;
+     
   document.getElementById('atm-bento').innerHTML = ATM_TYPES.map(a => {
     const f = curTier.fees[a.key] || {s:'fee'};
     return `<div class="atm-cell" data-s="${f.s}">
@@ -734,9 +1332,16 @@ function renderBankResult() {
       </div>
     </div>`;
   }).join('');
+  
   const noteEl = document.getElementById('bank-res-note');
-  if (curTier.note) { noteEl.textContent = '备注：' + curTier.note; noteEl.style.display = ''; }
-  else noteEl.style.display = 'none';
+  if (curTier.note) { 
+    noteEl.textContent = '备注：' + curTier.note; 
+    noteEl.style.display = '';
+  } else {
+    noteEl.style.display = 'none';
+  }
+  
+  setTimeout(() => document.getElementById('bank-res-card').scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
 }
 
 // ── Panel 2: ATM ──────────────────────────────────────
@@ -759,24 +1364,65 @@ function renderAtmResult() {
   document.getElementById('atm-res-card').style.display = '';
   const atm = ATM_TYPES.find(a => a.key === curAtm);
   const rows = [];
-  BANKS.forEach(bank => bank.tiers.forEach(tier => {
-    const f = tier.fees[curAtm] || {s:'fee'};
-    rows.push({ bname: bank.name, logo: renderBankLogo(bank, 'res-chip-logo'), sub: bank.tiers.length > 1 ? tier.label : '', note: f.n||'', f, s: f.s });
-  }));
+  
+  BANKS.forEach(bank => {
+    const cardTypes = bank.cardTypes || (bank.tiers ? [{ id: 'default', label: '银行卡', tiers: bank.tiers }] : []);
+
+    cardTypes.forEach(card => {
+      const outcomeMap = new Map();
+
+      card.tiers.forEach(tier => {
+        const f = tier.fees[curAtm] || {s:'fee', n:''};
+        const signature = `${f.s}|${f.n || ''}`;
+
+        if (!outcomeMap.has(signature)) {
+          outcomeMap.set(signature, { f: f, labels: [] });
+        }
+        outcomeMap.get(signature).labels.push(tier.label);
+      });
+
+      outcomeMap.forEach((outcome, signature) => {
+        const f = outcome.f;
+        const labels = outcome.labels;
+        
+        let subText = '';
+
+        if (labels.length === card.tiers.length) {
+          subText = card.id === 'default' ? '' : card.label;
+        } else {
+          const combinedLabels = labels.join(' / ');
+          subText = card.id === 'default' ? combinedLabels : `${card.label} - ${combinedLabels}`;
+        }
+
+        rows.push({ 
+          bname: bank.name, 
+          logo: renderBankLogo(bank, 'res-chip-logo'), 
+          sub: subText, 
+          note: f.n||'', 
+          f, 
+          s: f.s 
+        });
+      });
+    });
+  });
+  
   rows.sort((a, b) => SO.indexOf(a.s) - SO.indexOf(b.s));
   const fc = rows.filter(r => r.s === 'free').length;
+  
   document.getElementById('atm-res-bar').innerHTML =
     `<span class="res-chip">${renderAtmIcon(atm, atm.iconKind === 'pair' ? 'res-chip-logo-pair' : (atm.iconKind === 'svg' ? 'res-chip-logo' : ''))} ${atm.label}</span>
-     <span class="res-stat"><strong>${fc}</strong> 家银行/户口免费</span>`;
+     <span class="res-stat"><strong>${fc}</strong> 个卡类/户口组合免费</span>`;
+     
   const grp = {}; SO.forEach(s => grp[s] = []);
   rows.forEach(r => grp[r.s].push(r));
+  
   document.getElementById('atm-res-list').innerHTML = SO.filter(s => grp[s].length).map(s =>
     `<div class="sg">
-      <div class="sg-head"><span>${GL[s]}</span><span class="sg-line"></span><span>${grp[s].length} 家</span></div>
+      <div class="sg-head"><span>${GL[s]}</span><span class="sg-line"></span><span>${grp[s].length} 项</span></div>
       ${grp[s].map(r => `<div class="bank-row">
         <div>
           <div class="br-name">${r.logo || ''}${r.bname}</div>
-          ${r.sub  ? `<div class="br-sub">${r.sub}</div>` : ''}
+          ${r.sub  ? `<div class="br-sub" style="font-weight:600">${r.sub}</div>` : ''}
           ${r.note ? `<div class="br-sub">${r.note}</div>` : ''}
         </div>
         <span class="bdg ${r.s}">${SI[r.s]} ${SL[r.s]}</span>
@@ -785,6 +1431,7 @@ function renderAtmResult() {
   ).join('');
 }
 
+
 // ── Panel 3: Table ────────────────────────────────────
 let tableRendered = false;
 function renderTable() {
@@ -792,22 +1439,40 @@ function renderTable() {
     tableRendered = true;
     const heads = ATM_TYPES.map(a => `<th>${renderAtmIcon(a, a.iconKind === 'pair' ? 'res-chip-logo-pair' : (a.iconKind === 'svg' ? 'res-chip-logo' : ''))} ${a.label}</th>`).join('');
     const rows = [];
-    BANKS.forEach(bank => bank.tiers.forEach((tier, ti) => {
-      const bc = ti === 0
-        ? `<td rowspan="${bank.tiers.length}" class="sc1" style="font-weight:700;border-right:1px solid var(--card-bd);white-space:nowrap"><span class="tbl-bank-cell">${renderBankLogo(bank, 'tbl-bank-logo')}<span>${bank.name}</span></span></td>`
-        : '';
-      
-      const tc = `<td class="sc2" style="font-size:.82rem;color:var(--t2);border-right:1px solid var(--card-bd);white-space:nowrap">${tier.label}</td>`;
-      
-      const fc = ATM_TYPES.map(a => {
-        const f = tier.fees[a.key] || {s:'fee'};
-        return `<td><span class="bdg ${f.s}">${SI[f.s]} ${SL[f.s]}</span>${f.n?`<div class="note-sm">${f.n}</div>`:''}</td>`;
-      }).join('');
-      rows.push(`<tr>${bc}${tc}${fc}</tr>`);
-    }));
+    
+    BANKS.forEach(bank => {
+      const cardTypes = bank.cardTypes || (bank.tiers ? [{ id: 'default', label: '银行卡', tiers: bank.tiers }] : []);
 
+      let totalBankRows = 0;
+      cardTypes.forEach(c => totalBankRows += c.tiers.length);
+      
+      cardTypes.forEach((card, ci) => {
+        card.tiers.forEach((tier, ti) => {
+          const bc = (ci === 0 && ti === 0)
+            ? `<td rowspan="${totalBankRows}" class="sc1" style="font-weight:700;border-right:1px solid var(--card-bd);white-space:nowrap"><span class="tbl-bank-cell">${renderBankLogo(bank, 'tbl-bank-logo')}<span>${bank.name}</span></span></td>`
+            : '';
+          
+          // 只有这张卡的第一行才渲染卡片类型
+          // 细节优化：如果是旧结构的兼容补丁卡，类型那一格显示 "银行卡"，避免表格错位或空白
+          const cardLabelToShow = card.id === 'default' ? '银行卡' : card.label;
+          const cc = (ti === 0)
+            ? `<td rowspan="${card.tiers.length}" class="sc2" style="font-size:.82rem;font-weight:600;border-right:1px solid var(--card-bd);white-space:nowrap">${cardLabelToShow}</td>`
+            : '';
+          
+          const tc = `<td style="font-size:.82rem;color:var(--t2);border-right:1px solid var(--card-bd);white-space:nowrap">${tier.label}</td>`;
+          
+          const fc = ATM_TYPES.map(a => {
+            const f = tier.fees[a.key] || {s:'fee'};
+            return `<td><span class="bdg ${f.s}">${SI[f.s]} ${SL[f.s]}</span>${f.n?`<div class="note-sm">${f.n}</div>`:''}</td>`;
+          }).join('');
+          
+          rows.push(`<tr>${bc}${cc}${tc}${fc}</tr>`);
+        });
+      });
+    });
+    
     document.getElementById('tbl-content').innerHTML =
-      `<table class="tbl"><thead><tr><th class="sc1">银行</th><th class="sc2">户口类别</th>${heads}</tr></thead><tbody>${rows.join('')}</tbody></table>`;
+      `<table class="tbl"><thead><tr><th class="sc1">银行</th><th class="sc2">卡片类型</th><th>户口类别</th>${heads}</tr></thead><tbody>${rows.join('')}</tbody></table>`;
   }
   
   setTimeout(() => {
