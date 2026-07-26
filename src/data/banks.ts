@@ -786,8 +786,25 @@ export const BANKS: Bank[] = [
     name: '东莞银行（国际）',
     cardTypes: [
       {
-        id: 'debit',
-        label: 'MasterCard / 银联扣账卡',
+        id: 'unionpay-debit',
+        label: '银联扣账卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
+              macauBankTong: { s: F.Fee, n: '每次20港元' },
+              macauOther: { s: F.Fee, n: '每次50港元' },
+              mainland: { s: F.Fee, n: '每次50港元' },
+              overseas: { s: F.Fee, n: '每次50港元' },
+            },
+          },
+        ],
+      },
+      {
+        id: 'mastercard-debit',
+        label: 'MasterCard 扣账卡',
         tiers: [
           {
             label: '所有客户',

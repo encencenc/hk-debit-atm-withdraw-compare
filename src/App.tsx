@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import { motion } from 'motion/react'
 import { Hero } from './components/Hero'
 import { Footer } from './components/Footer'
 import { BankWizard } from './components/BankWizard'
@@ -60,19 +60,18 @@ export default function App() {
       {/* 全局图例 */}
       <StatusLegend className="mt-3.5" />
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={tab}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 6 }}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
-        >
-          {tab === 'bank' && <BankWizard />}
-          {tab === 'atm' && <AtmFinder />}
-          {tab === 'table' && <ComparisonTable />}
-        </motion.div>
-      </AnimatePresence>
+      {/* 仅入场动画：外层若用 AnimatePresence 等退场，会被 BankWizard 内嵌套的
+          AnimatePresence（凭条打印）卡住 onExitComplete，导致切换后内容空白 */}
+      <motion.div
+        key={tab}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+      >
+        {tab === 'bank' && <BankWizard />}
+        {tab === 'atm' && <AtmFinder />}
+        {tab === 'table' && <ComparisonTable />}
+      </motion.div>
 
       <Footer />
     </div>

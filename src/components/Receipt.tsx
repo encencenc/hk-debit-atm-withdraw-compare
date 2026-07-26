@@ -52,13 +52,16 @@ export function Receipt({ bank, cardType, tier, updatedAt }: Props) {
   return (
     <div className="mt-[18px] flex flex-col items-center">
       {/* 出票口 */}
-      <div className="mb-3 w-[520px] max-w-full" aria-hidden="true">
+      <div className="mb-3 w-full max-w-[520px]" aria-hidden="true">
         <div className="mx-auto h-2.5 w-[86%] rounded-full bg-neutral-800/85 shadow-inner dark:bg-black/70" />
         <div className="mx-auto mt-1 h-px w-[92%] bg-black/10 dark:bg-white/10" />
       </div>
 
-      {/* 打印视口：向上位移时裁掉纸张，制造「从缝中打出」效果 */}
-      <div className="-mx-4 -mb-4 overflow-hidden px-4 pb-4">
+      {/* 打印视口：clip-path 只裁上边（制造「从缝中打出」效果），负值给左右和下方的投影留空间 */}
+      <div
+        className="w-full max-w-[520px]"
+        style={{ clipPath: 'inset(0 -60px -60px -60px)' }}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={signature}
@@ -66,7 +69,7 @@ export function Receipt({ bank, cardType, tier, updatedAt }: Props) {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative w-[520px] max-w-full"
+            className="relative w-full"
             style={{ filter: 'var(--receipt-shadow)' }}
           >
             <ReceiptEdge side="top" />
@@ -78,7 +81,7 @@ export function Receipt({ bank, cardType, tier, updatedAt }: Props) {
                 className="flex flex-col items-center gap-2 border-b border-dashed border-bd pb-4 text-center"
               >
                 <BankLogo bank={bank} size={54} />
-                <div className="text-[21px] font-bold tracking-tight">{bank.name}</div>
+                <div className="text-[clamp(18px,5.6vw,21px)] font-bold tracking-tight">{bank.name}</div>
                 <div className="text-sm text-mut">
                   {cardType.label} · {tier.label}
                 </div>
@@ -97,7 +100,7 @@ export function Receipt({ bank, cardType, tier, updatedAt }: Props) {
                     <div className="min-w-0">
                       <div className="text-[15px] font-semibold">{a.label}</div>
                       {lines.map((line, i) => (
-                        <div key={i} className="mono mt-[3px] text-[12.5px] leading-normal text-mut">
+                        <div key={i} className="mono mt-[3px] text-[12.5px] leading-normal text-mut [overflow-wrap:anywhere]">
                           {line}
                         </div>
                       ))}
