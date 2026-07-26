@@ -94,7 +94,7 @@ function MobileCards({ rows }: { rows: FlatRow[] }) {
               </div>
             </div>
           </div>
-          <div className="mt-3 grid grid-cols-3 gap-[7px]">
+          <div className="mt-3 grid grid-cols-3 gap-[7px] max-[359px]:grid-cols-2">
             {ATM_TYPES.map((a) => (
               <StatusChip
                 key={a.key}
