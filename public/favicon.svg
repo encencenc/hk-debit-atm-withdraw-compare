@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="7" fill="#0F6E56"/>
+  <!-- receipt with torn bottom -->
+  <path fill="#FAFAF8" d="M9 7h14v16l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4V7z"/>
+  <g stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round">
+    <line x1="12" y1="11" x2="20" y2="11"/>
+    <line x1="12" y1="14.5" x2="20" y2="14.5"/>
+    <line x1="12" y1="18" x2="17" y2="18"/>
+  </g>
+</svg>

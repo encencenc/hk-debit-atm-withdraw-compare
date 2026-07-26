@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   设计令牌 —— 以 ATM收费对比.html 模板为基准
+   背景 / 卡片 / 文字为中性色，语义色只出现在费用状态上
+   ============================================================ */
+:root {
+  --bg: #f2f5f3;
+  --card: #ffffff;
+  --card2: #edf1ee;
+  --bd: #d8dfda;
+  --bd2: #e5eae6;
+  --tx: #1b201d;
+  --mut: #5b655e;
+  --ac: #188a5f;
+
+  /* 费用状态五级：F=免费 C=限定币种 A=限定ATM T=有FTF P=收费 */
+  --stF: #128251;
+  --stP: #bd4740;
+  --stA: #916508;
+  --stC: #187f8e;
+  --stT: #7451a8;
+
+  --receipt-shadow: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.14));
+}
+
+.dark {
+  --bg: #101312;
+  --card: #171b19;
+  --card2: #1f2522;
+  --bd: #2b322e;
+  --bd2: #232927;
+  --tx: #e9ece9;
+  --mut: #98a29b;
+  --ac: #2ea274;
+
+  --stF: #46c58e;
+  --stP: #e07a74;
+  --stA: #d9a63f;
+  --stC: #5bb8c9;
+  --stT: #b08bd9;
+
+  --receipt-shadow: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.3));
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font-family: "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.25s, color 0.25s;
+}
+
+button {
+  cursor: pointer;
+}
+
+input::placeholder {
+  color: var(--mut);
+}
+
+/* 金额 / 日期 / 符号编号统一等宽 + tabular */
+.mono {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  font-feature-settings: 'tnum' 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 滚动条（表格横向滚动区） */
+::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bd);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 焦点可见 */
+:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: 2px;
+}
+
+/* 减弱动态效果：关闭平滑滚动 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
