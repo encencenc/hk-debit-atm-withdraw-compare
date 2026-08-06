@@ -4,7 +4,7 @@
 //  数据根据各银行公开资料整理，仅供参考，请以银行官网为准。
 // ============================================================================
 
-/** 费用状态五级体系。符号：✓ ◇ ◑ △ ✗ */
+/** 费用状态六级体系。符号：✓ ◇ ◑ △ ✗ — */
 export enum FeeStatus {
   /** ✓ 免费 */
   Free = 'free',
@@ -16,6 +16,8 @@ export enum FeeStatus {
   Ftf = 'ftf',
   /** ✗ 收费 */
   Fee = 'fee',
+  /** — 不适用 */
+  NotApplicable = 'na',
 }
 
 /** 六类 ATM 的键 */
@@ -85,7 +87,7 @@ export interface DataMeta {
 }
 
 export const META: DataMeta = {
-  updatedAt: '2026年7月',
+  updatedAt: '2026年8月',
   source: '根据各银行公开资料整理，仅供参考，请以银行官网为准',
 }
 
@@ -166,6 +168,14 @@ export const BANK_LOGOS: Record<string, string> = {
   welab: 'icon/汇立银行.png',
   mox: 'icon/Mox Bank.png',
   bdo: 'icon/东莞银行.svg',
+  chonghing: 'icon/创兴银行.svg',
+  cmbwinglung: 'icon/招商永隆银行.svg',
+  publicbank: 'icon/大众银行.png',
+  ocbc: 'icon/华侨银行.svg',
+  shacom: 'icon/上海商业银行.svg',
+  chiyu: 'icon/集友银行.svg',
+  fubon: 'icon/富邦银行.svg',
+  bocom: 'icon/交通银行.svg',
 }
 
 // ---------------------------------------------------------------------------
@@ -175,6 +185,71 @@ export const BANK_LOGOS: Record<string, string> = {
 const F = FeeStatus
 
 export const BANKS: Bank[] = [
+  {
+    id: 'scb',
+    name: '渣打银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers: [
+          {
+            label: '普通客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee },
+              macauBankTong: { s: F.Fee },
+              macauOther: { s: F.Fee },
+              mainland: { s: F.Fee },
+              overseas: { s: F.Fee },
+            },
+          },
+          {
+            label: 'Premium 理财及以上',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Free },
+              macauBankTong: { s: F.Free },
+              macauOther: { s: F.Ftf, n: '免手续费但有 0.95% FTF' },
+              mainland: { s: F.Free },
+              overseas: {
+                s: F.Currency,
+                n: '仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 0.95% FTF',
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: 'atm',
+        label: '银联港币提款卡',
+        tiers: [
+          {
+            label: '普通客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次15港元' },
+              macauBankTong: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
+              macauOther: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
+              mainland: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
+              overseas: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
+            },
+          },
+          {
+            label: 'Premium 理财及以上',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次15港元' },
+              macauBankTong: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
+              macauOther: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
+              mainland: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
+              overseas: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
+            },
+          },
+        ],
+      },
+    ],
+  },
   {
     id: 'hsbc',
     name: '汇丰银行',
@@ -223,7 +298,7 @@ export const BANKS: Bank[] = [
       },
       {
         id: 'atm',
-        label: '银联提款卡',
+        label: '银联港币提款卡',
         tiers: [
           {
             label: '普通客户',
@@ -248,6 +323,241 @@ export const BANKS: Bank[] = [
               overseas: { s: F.Limited, n: '仅汇丰ATM免费<br>其余每次50港元' },
             },
             note: '不含ATM Fee',
+          },
+        ],
+      },
+      {
+        id: 'plus',
+        label: 'PLUS提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Fee, n: '每次25港元' },
+              hkHSBCHS: { s: F.Free },
+              macauBankTong: { s: F.Fee, n: '每次15港元 + 1% FTF' },
+              macauOther: { s: F.Fee, n: '每次15港元 + 1% FTF' },
+              mainland: { s: F.Fee, n: '每次15港元 + 1% FTF' },
+              overseas: { s: F.Fee, n: '每次15港元 + 1% FTF' },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'ccb',
+    name: '中国建设银行（亚洲）',
+    cardTypes: [
+      {
+        id: 'atm',
+        label: '银联双币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              macauBankTong: { s: F.Limited, n: '建设银行ATM免费<br>其余每次25港元' },
+              macauOther: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              mainland: {
+                s: F.Limited,
+                n: '建设银行ATM免费<br>通过港元账户每次15港元<br>通过人民币账户每次15人民币',
+              },
+              overseas: {
+                s: F.Limited,
+                n: '美国银行ATM免费<br>通过港元账户每次15港元<br>通过人民币账户每次15人民币',
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'bochk',
+    name: '中国银行（香港）',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '通过港元账户每次25港元<br>通过人民币账户每次25人民币' },
+              macauBankTong: { s: F.Fee, n: '每次20港元' },
+              macauOther: { s: F.Free },
+              mainland: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+              overseas: { s: F.Free },
+            },
+          },
+        ],
+      },
+      {
+        id: 'atm',
+        label: '银联双币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              macauBankTong: { s: F.Fee, n: '每次20港元' },
+              macauOther: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+              mainland: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+              overseas: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'bea',
+    name: '东亚银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次30港元' },
+              macauBankTong: { s: F.Free },
+              macauOther: { s: F.Ftf, n: '免手续费但有 FTF' },
+              mainland: { s: F.Free },
+              overseas: {
+                s: F.Currency,
+                n: '仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 1.95% FTF',
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: 'atm',
+        label: '银联双币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次15港元' },
+              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              macauOther: { s: F.Fee, n: '每次50港元' },
+              mainland: { s: F.Fee, n: '东亚银行ATM每次15港元<br>其他内地ATM每次50港元/人民币' },
+              overseas: { s: F.Fee, n: '每次50港元' },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'dbs',
+    name: '星展银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: '银联扣账卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '免手续费但有FTF' },
+              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              macauOther: { s: F.Fee, n: '每次50港元' },
+              mainland: { s: F.Fee, n: '每次50港元' },
+              overseas: { s: F.Fee, n: '每次50港元' },
+            },
+          },
+        ],
+      },
+      {
+        id: 'atm',
+        label: '银联双币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '免手续费但有FTF' },
+              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              macauOther: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+              mainland: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+              overseas: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'cncbi',
+    name: '信银国际',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'MasterCard 扣账卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Free },
+              macauBankTong: { s: F.Free },
+              macauOther: { s: F.Free },
+              mainland: { s: F.Free },
+              overseas: {
+                s: F.Currency,
+                n: '仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 1.95% FTF',
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: 'atm',
+        label: '银联双币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Free },
+              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              macauOther: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+              mainland: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+              overseas: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'cmbwinglung',
+    name: '招商永隆银行',
+    cardTypes: [
+      {
+        id: 'unionpay',
+        label: '银联双币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
+              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              macauOther: { s: F.Fee, n: '每次25港元' },
+              mainland: { s: F.Fee, n: '每次25人民币' },
+              overseas: { s: F.Fee, n: '每次25港元' },
+            },
           },
         ],
       },
@@ -301,7 +611,7 @@ export const BANKS: Bank[] = [
       },
       {
         id: 'atm',
-        label: '银联提款卡',
+        label: '银联港币提款卡',
         tiers: [
           {
             label: '普通客户',
@@ -332,39 +642,42 @@ export const BANKS: Bank[] = [
     ],
   },
   {
-    id: 'bochk',
-    name: '中国银行（香港）',
+    id: 'shacom',
+    name: '上海商业银行',
     cardTypes: [
       {
-        id: 'debit',
-        label: 'MasterCard 扣账卡',
+        id: 'unionpay-hkd',
+        label: '银联港币提款卡',
         tiers: [
           {
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '通过港元账户每次25港元<br>通过人民币账户每次25人民币' },
-              macauBankTong: { s: F.Fee, n: '每次20港元' },
-              macauOther: { s: F.Free },
-              mainland: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
-              overseas: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次40港元' },
+              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              macauOther: { s: F.Fee, n: '每次40港元' },
+              mainland: { s: F.Fee, n: '每次40港元' },
+              overseas: { s: F.Fee, n: '每次40港元' },
             },
           },
         ],
       },
       {
-        id: 'atm',
-        label: '银联提款卡',
+        id: 'unionpay',
+        label: '银联双币提款卡',
         tiers: [
           {
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
-              macauBankTong: { s: F.Fee, n: '每次20港元' },
-              macauOther: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
-              mainland: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
-              overseas: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+              hkHSBCHS: { s: F.Fee, n: '每次40港元' },
+              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              macauOther: { s: F.Fee, n: '每次40港元' },
+              mainland: {
+                s: F.Fee,
+                n: '通过港元账户每次40港元<br>通过人民币账户每次40人民币',
+              },
+              overseas: { s: F.Fee, n: '每次40港元' },
             },
           },
         ],
@@ -372,25 +685,22 @@ export const BANKS: Bank[] = [
     ],
   },
   {
-    id: 'icbc',
-    name: '中国工商银行（亚洲）',
+    id: 'publicbank',
+    name: '大众银行',
     cardTypes: [
       {
-        id: 'atm',
-        label: '银联提款卡',
+        id: 'jetco',
+        label: '银通提款卡',
         tiers: [
           {
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              hkHSBCHS: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
               macauBankTong: { s: F.Fee, n: '每次10港元' },
-              macauOther: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
-              mainland: {
-                s: F.Limited,
-                n: '工商银行ATM免费<br>通过港元账户每次15港元<br>通过人民币账户每次15人民币',
-              },
-              overseas: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              macauOther: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+              mainland: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+              overseas: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
             },
           },
         ],
@@ -398,25 +708,25 @@ export const BANKS: Bank[] = [
     ],
   },
   {
-    id: 'ccb',
-    name: '中国建设银行（亚洲）',
+    id: 'ocbc',
+    name: '华侨银行',
     cardTypes: [
       {
-        id: 'atm',
-        label: '银联提款卡',
+        id: 'unionpay',
+        label: '银联双币提款卡',
         tiers: [
           {
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
-              macauBankTong: { s: F.Limited, n: '建设银行ATM免费<br>其余每次25港元' },
-              macauOther: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              hkHSBCHS: { s: F.Fee, n: '每次15港元' },
+              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              macauOther: { s: F.Fee, n: '每次15港元' },
               mainland: {
-                s: F.Limited,
-                n: '建设银行ATM免费<br>通过港元账户每次15港元<br>通过人民币账户每次15人民币',
+                s: F.Fee,
+                n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币',
               },
-              overseas: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              overseas: { s: F.Fee, n: '每次15港元' },
             },
           },
         ],
@@ -424,112 +734,33 @@ export const BANKS: Bank[] = [
     ],
   },
   {
-    id: 'ncb',
-    name: '南洋商业银行',
+    id: 'chiyu',
+    name: '集友银行',
     cardTypes: [
       {
-        id: 'atm',
-        label: '银联提款卡',
+        id: 'unionpay',
+        label: '银联双币提款卡',
         tiers: [
           {
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              hkHSBCHS: {
+                s: F.Fee,
+                n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币',
+              },
               macauBankTong: { s: F.Fee, n: '每次20港元' },
-              macauOther: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
-              mainland: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
-              overseas: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
-            },
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'scb',
-    name: '渣打银行',
-    cardTypes: [
-      {
-        id: 'debit',
-        label: 'MasterCard 扣账卡',
-        tiers: [
-          {
-            label: '普通客户',
-            fees: {
-              hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee },
-              macauBankTong: { s: F.Fee },
-              macauOther: { s: F.Fee },
-              mainland: { s: F.Fee },
-              overseas: { s: F.Fee },
-            },
-          },
-          {
-            label: 'Premium 理财及以上',
-            fees: {
-              hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Free },
-              macauBankTong: { s: F.Free },
-              macauOther: { s: F.Ftf, n: '免手续费但有 0.95% FTF' },
-              mainland: { s: F.Free },
-              overseas: {
-                s: F.Currency,
-                n: '仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 0.95% FTF',
+              macauOther: {
+                s: F.Fee,
+                n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币',
               },
-            },
-          },
-        ],
-      },
-      {
-        id: 'atm',
-        label: '银联提款卡',
-        tiers: [
-          {
-            label: '普通客户',
-            fees: {
-              hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '每次15港元' },
-              macauBankTong: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
-              macauOther: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
-              mainland: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
-              overseas: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
-            },
-          },
-          {
-            label: 'Premium 理财及以上',
-            fees: {
-              hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '每次15港元' },
-              macauBankTong: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
-              macauOther: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
-              mainland: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
-              overseas: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
-            },
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'bea',
-    name: '东亚银行',
-    cardTypes: [
-      {
-        id: 'debit',
-        label: 'MasterCard 扣账卡',
-        tiers: [
-          {
-            label: '所有客户',
-            fees: {
-              hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '每次30港元' },
-              macauBankTong: { s: F.Free },
-              macauOther: { s: F.Ftf, n: '免手续费但有 FTF' },
-              mainland: { s: F.Free },
+              mainland: {
+                s: F.Fee,
+                n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币',
+              },
               overseas: {
-                s: F.Currency,
-                n: '仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 1.95% FTF',
+                s: F.Fee,
+                n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币',
               },
             },
           },
@@ -563,7 +794,7 @@ export const BANKS: Bank[] = [
       },
       {
         id: 'atm',
-        label: '银联提款卡',
+        label: '银联双币提款卡',
         tiers: [
           {
             label: '所有客户',
@@ -581,42 +812,131 @@ export const BANKS: Bank[] = [
     ],
   },
   {
-    id: 'cncbi',
-    name: '信银国际',
+    id: 'chonghing',
+    name: '创兴银行',
     cardTypes: [
       {
-        id: 'debit',
-        label: 'MasterCard 扣账卡',
+        id: 'unionpay-hkd',
+        label: '银联港币提款卡',
         tiers: [
           {
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Free },
-              macauBankTong: { s: F.Free },
-              macauOther: { s: F.Free },
-              mainland: { s: F.Free },
-              overseas: {
-                s: F.Currency,
-                n: '仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 1.95% FTF',
-              },
+              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
+              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              macauOther: { s: F.Fee, n: '每次25港元' },
+              mainland: { s: F.Fee, n: '每次25港元' },
+              overseas: { s: F.Fee, n: '每次25港元' },
             },
           },
         ],
       },
       {
+        id: 'unionpay-cny',
+        label: '银联人民币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: {
+                s: F.NotApplicable,
+                n: '该卡仅支持在本行支持人民币提款服务的ATM免费提款人民币',
+              },
+              hkHSBCHS: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+              macauBankTong: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+              macauOther: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+              mainland: { s: F.Fee, n: '每次15人民币' },
+              overseas: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'ncb',
+    name: '南洋商业银行',
+    cardTypes: [
+      {
         id: 'atm',
-        label: '银联提款卡',
+        label: '银联双币提款卡',
         tiers: [
           {
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Free },
-              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              hkHSBCHS: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              macauBankTong: { s: F.Fee, n: '每次20港元' },
               macauOther: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
               mainland: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
               overseas: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'icbc',
+    name: '中国工商银行（亚洲）',
+    cardTypes: [
+      {
+        id: 'atm',
+        label: '银联双币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              macauBankTong: { s: F.Fee, n: '每次10港元' },
+              macauOther: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+              mainland: {
+                s: F.Limited,
+                n: '工商银行ATM免费<br>通过港元账户每次15港元<br>通过人民币账户每次15人民币',
+              },
+              overseas: { s: F.Fee, n: '通过港元账户每次15港元<br>通过人民币账户每次15人民币' },
+            },
+          },
+        ],
+      },
+      {
+        id: 'unionpay-cny',
+        label: '银联人民币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+              hkHSBCHS: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+              macauBankTong: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+              macauOther: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+              mainland: { s: F.Fee, n: '每次15人民币' },
+              overseas: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'fubon',
+    name: '富邦银行',
+    cardTypes: [
+      {
+        id: 'plus',
+        label: 'PLUS提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
+              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              macauOther: { s: F.Fee, n: '每次25港元 + 1% FTF' },
+              mainland: { s: F.Fee, n: '每次25港元 + 1% FTF' },
+              overseas: { s: F.Fee, n: '每次25港元 + 1% FTF' },
             },
           },
         ],
@@ -641,7 +961,7 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Free },
               overseas: {
                 s: F.Currency,
-                n: '仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元、泰铢',
+                n: '仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元、泰铢<br>其余币种收取 1.95% FTF',
               },
             },
           },
@@ -650,19 +970,62 @@ export const BANKS: Bank[] = [
     ],
   },
   {
-    id: 'dbs',
-    name: '星展银行',
+    id: 'bocom',
+    name: '交通银行',
     cardTypes: [
       {
-        id: 'debit',
-        label: '银联扣账卡',
+        id: 'unionpay-hkd',
+        label: '银联港币提款卡',
         tiers: [
           {
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '免手续费但有FTF' },
-              macauBankTong: { s: F.Fee, n: '每次25港元' },
+              hkHSBCHS: { s: F.Free },
+              macauBankTong: { s: F.Fee, n: '每次10港元' },
+              macauOther: { s: F.Fee, n: '每次15港元' },
+              mainland: {
+                s: F.Fee,
+                n: '交通银行ATM每次8港元<br>其他内地ATM未列明',
+              },
+              overseas: { s: F.Fee, n: '每次15港元' },
+            },
+          },
+        ],
+      },
+      {
+        id: 'unionpay-dual',
+        label: '银联双币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Free },
+              macauBankTong: { s: F.Fee, n: '每次10港元' },
+              macauOther: { s: F.Fee, n: '每次15港元' },
+              mainland: { s: F.Fee, n: '每次15人民币' },
+              overseas: { s: F.Fee, n: '每次15港元' },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'bdo',
+    name: '东莞银行（国际）',
+    cardTypes: [
+      {
+        id: 'unionpay-debit',
+        label: '银联港币提款卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
+              macauBankTong: { s: F.Fee, n: '每次20港元' },
               macauOther: { s: F.Fee, n: '每次50港元' },
               mainland: { s: F.Fee, n: '每次50港元' },
               overseas: { s: F.Fee, n: '每次50港元' },
@@ -671,18 +1034,18 @@ export const BANKS: Bank[] = [
         ],
       },
       {
-        id: 'atm',
-        label: '银联提款卡',
+        id: 'mastercard-debit',
+        label: 'MasterCard 扣账卡',
         tiers: [
           {
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '免手续费但有FTF' },
-              macauBankTong: { s: F.Fee, n: '每次25港元' },
-              macauOther: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
-              mainland: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
-              overseas: { s: F.Fee, n: '通过港元账户每次50港元<br>通过人民币账户每次50人民币' },
+              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
+              macauBankTong: { s: F.Fee, n: '每次20港元' },
+              macauOther: { s: F.Fee, n: '每次50港元' },
+              mainland: { s: F.Fee, n: '每次50港元' },
+              overseas: { s: F.Fee, n: '每次50港元' },
             },
           },
         ],
@@ -698,60 +1061,49 @@ export const BANKS: Bank[] = [
         label: 'Visa 扣账卡',
         tiers: [
           {
-            label: '所有客户',
+            label: '普通、Lv1客户',
             fees: {
-              hkBankTong: { s: F.Free, n: '每月80000 HKD免费额度，超出收取1%手续费' },
-              hkHSBCHS: { s: F.Free, n: '每月80000 HKD免费额度，超出收取1%手续费' },
-              macauBankTong: { s: F.Fee, n: '每次50港元 + 0.5% FTF' },
-              macauOther: { s: F.Fee, n: '每次50港元 + 0.5% FTF' },
-              mainland: { s: F.Fee, n: '每次50港元 + 0.5% FTF' },
-              overseas: { s: F.Fee, n: '每次50港元 + 0.5% FTF' },
+              hkBankTong: { s: F.Free, n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费' },
+              hkHSBCHS: { s: F.Free, n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费' },
+              macauBankTong: {
+                s: F.Fee,
+                n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费<br>在ATM选择以当地货币入账（EDC）：每次50港元 + 1.95% FTF<br>在ATM选择以港币入账（DCC）：每次50港元，是否收取1.95% 额外汇率费用未明',
+              },
+              macauOther: {
+                s: F.Fee,
+                n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费<br>在ATM选择以当地货币入账（EDC）：每次50港元 + 1.95% FTF<br>在ATM选择以港币入账（DCC）：每次50港元，是否收取1.95% 额外汇率费用未明',
+              },
+              mainland: {
+                s: F.Fee,
+                n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费<br>在ATM选择以当地货币入账（EDC）：每次50港元 + 1.95% FTF<br>在ATM选择以港币入账（DCC）：每次50港元，是否收取1.95% 额外汇率费用未明',
+              },
+              overseas: {
+                s: F.Fee,
+                n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费<br>在ATM选择以当地货币入账（EDC）：每次50港元 + 1.95% FTF<br>在ATM选择以港币入账（DCC）：每次50港元，是否收取1.95% 额外汇率费用未明',
+              },
             },
           },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'airstar',
-    name: '象象银行',
-    cardTypes: [
-      {
-        id: 'debit',
-        label: 'Visa 扣账卡',
-        tiers: [
           {
-            label: '所有客户',
+            label: 'Lv2客户',
             fees: {
-              hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Free },
-              macauBankTong: { s: F.Fee, n: '每笔交易金额 3% + 0.5% FTF' },
-              macauOther: { s: F.Fee, n: '每笔交易金额 3% + 0.5% FTF' },
-              mainland: { s: F.Fee, n: '每笔交易金额 3% + 0.5% FTF' },
-              overseas: { s: F.Fee, n: '每笔交易金额 3% + 0.5% FTF' },
-            },
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'welab',
-    name: '汇立银行',
-    cardTypes: [
-      {
-        id: 'debit',
-        label: 'MasterCard 扣账卡',
-        tiers: [
-          {
-            label: '所有客户',
-            fees: {
-              hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '每笔交易金额 1%，最低10港元' },
-              macauBankTong: { s: F.Fee, n: '每笔交易金额 1.5%，最低25港元' },
-              macauOther: { s: F.Fee, n: '每笔交易金额 1.5%，最低25港元' },
-              mainland: { s: F.Fee, n: '每笔交易金额 1.5%，最低25港元' },
-              overseas: { s: F.Fee, n: '每笔交易金额 1.5%，最低25港元' },
+              hkBankTong: { s: F.Free, n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费' },
+              hkHSBCHS: { s: F.Free, n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费' },
+              macauBankTong: {
+                s: F.Ftf,
+                n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费<br>每月前3笔豁免50港元手续费<br>在ATM选择以当地货币入账（EDC）收取1.95% FTF；在ATM选择港币入账（DCC）是否收取1.95% 额外汇率费用未明',
+              },
+              macauOther: {
+                s: F.Ftf,
+                n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费<br>每月前3笔豁免50港元手续费<br>在ATM选择以当地货币入账（EDC）收取1.95% FTF；在ATM选择港币入账（DCC）是否收取1.95% 额外汇率费用未明',
+              },
+              mainland: {
+                s: F.Ftf,
+                n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费<br>每月前3笔豁免50港元手续费<br>在ATM选择以当地货币入账（EDC）收取1.95% FTF；在ATM选择港币入账（DCC）是否收取1.95% 额外汇率费用未明',
+              },
+              overseas: {
+                s: F.Ftf,
+                n: '每月本地+海外共80000 HKD免费额度，超出收取1%手续费<br>每月前3笔豁免50港元手续费<br>在ATM选择以当地货币入账（EDC）收取1.95% FTF；在ATM选择港币入账（DCC）是否收取1.95% 额外汇率费用未明',
+              },
             },
           },
         ],
@@ -782,39 +1134,45 @@ export const BANKS: Bank[] = [
     ],
   },
   {
-    id: 'bdo',
-    name: '东莞银行（国际）',
+    id: 'welab',
+    name: '汇立银行',
     cardTypes: [
       {
-        id: 'unionpay-debit',
-        label: '银联扣账卡',
-        tiers: [
-          {
-            label: '所有客户',
-            fees: {
-              hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
-              macauBankTong: { s: F.Fee, n: '每次20港元' },
-              macauOther: { s: F.Fee, n: '每次50港元' },
-              mainland: { s: F.Fee, n: '每次50港元' },
-              overseas: { s: F.Fee, n: '每次50港元' },
-            },
-          },
-        ],
-      },
-      {
-        id: 'mastercard-debit',
+        id: 'debit',
         label: 'MasterCard 扣账卡',
         tiers: [
           {
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
-              macauBankTong: { s: F.Fee, n: '每次20港元' },
-              macauOther: { s: F.Fee, n: '每次50港元' },
-              mainland: { s: F.Fee, n: '每次50港元' },
-              overseas: { s: F.Fee, n: '每次50港元' },
+              hkHSBCHS: { s: F.Fee, n: '每笔交易金额 1%，最低10港元' },
+              macauBankTong: { s: F.Fee, n: '每笔交易金额 1.5%，最低25港元' },
+              macauOther: { s: F.Fee, n: '每笔交易金额 1.5%，最低25港元' },
+              mainland: { s: F.Fee, n: '每笔交易金额 1.5%，最低25港元' },
+              overseas: { s: F.Fee, n: '每笔交易金额 1.5%，最低25港元' },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'airstar',
+    name: '象象银行',
+    cardTypes: [
+      {
+        id: 'debit',
+        label: 'Visa 扣账卡',
+        tiers: [
+          {
+            label: '所有客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Free },
+              macauBankTong: { s: F.Fee, n: '每笔交易金额 3% + 0.5% FTF' },
+              macauOther: { s: F.Fee, n: '每笔交易金额 3% + 0.5% FTF' },
+              mainland: { s: F.Fee, n: '每笔交易金额 3% + 0.5% FTF' },
+              overseas: { s: F.Fee, n: '每笔交易金额 3% + 0.5% FTF' },
             },
           },
         ],

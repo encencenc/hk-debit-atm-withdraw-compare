@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { ATM_TYPES, BANKS, FeeStatus, type AtmKey } from '../data/banks'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import {
   STATUS_CSSVAR,
   STATUS_LEGEND,
@@ -49,6 +50,7 @@ function buildRows(key: AtmKey): Row[] {
 /** 按 ATM 类型查找：选 ATM → 按状态分组列出各银行 */
 export function AtmFinder() {
   const [key, setKey] = useState<AtmKey>(ATM_TYPES[0].key)
+  const compact = !useMediaQuery('(min-width: 640px)')
   const atm = ATM_TYPES.find((a) => a.key === key)!
   const rows = buildRows(key)
   const freeCount = rows.filter((r) => r.status === FeeStatus.Free).length
@@ -149,11 +151,21 @@ export function AtmFinder() {
                         {/* 徽章列不可收缩：左侧文字过长时换行，而不是把徽章挤出卡片 */}
                         <span className="ml-auto flex shrink-0 items-center gap-3">
                           {lines.length > 0 && (
-                            <span className="hidden max-w-[min(360px,40vw)] text-right text-[12.5px] leading-snug text-mut sm:inline">
-                              {lines.join('；')}
+                            <span className="hidden max-w-[min(360px,40vw)] text-right text-[12.5px] leading-snug text-mut sm:block">
+                              {lines.map((line, lineIndex) => (
+                                <span key={`${line}-${lineIndex}`} className="block">
+                                  {line}
+                                </span>
+                              ))}
                             </span>
                           )}
-                          <StatusBadge status={r.status} note={r.note} className="shrink-0" />
+                          <StatusBadge
+                            status={r.status}
+                            note={r.note}
+                            contextLabel={atm.label}
+                            showDetails={compact}
+                            className="shrink-0"
+                          />
                         </span>
                       </div>
                     )

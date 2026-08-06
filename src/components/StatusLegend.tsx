@@ -1,12 +1,12 @@
 import {
   ALL_STATUSES,
   STATUS_CSSVAR,
-  STATUS_DESC,
   STATUS_LEGEND,
   STATUS_SYMBOL,
 } from '../lib/status'
+import { FeeDetailTrigger } from './StatusBadge'
 
-/** 顶部全局图例：五级状态 + 悬停提示 */
+/** 顶部全局图例：六级状态 + 悬停提示 */
 export function StatusLegend({ className = '' }: { className?: string }) {
   return (
     <div
@@ -14,12 +14,17 @@ export function StatusLegend({ className = '' }: { className?: string }) {
     >
       <span className="font-semibold">图例</span>
       {ALL_STATUSES.map((s) => (
-        <span key={s} title={STATUS_DESC[s]} className="inline-flex cursor-help items-center gap-1.5">
+        <FeeDetailTrigger
+          key={s}
+          status={s}
+          ariaLabel={STATUS_LEGEND[s]}
+          className="inline-flex cursor-help items-center gap-1.5"
+        >
           <b className="mono" aria-hidden="true" style={{ color: STATUS_CSSVAR[s] }}>
             {STATUS_SYMBOL[s]}
           </b>
           {STATUS_LEGEND[s]}
-        </span>
+        </FeeDetailTrigger>
       ))}
     </div>
   )

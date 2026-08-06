@@ -7,6 +7,7 @@ export const STATUS_SYMBOL: Record<FeeStatus, string> = {
   [FeeStatus.Limited]: '◑',
   [FeeStatus.Ftf]: '△',
   [FeeStatus.Fee]: '✗',
+  [FeeStatus.NotApplicable]: '—',
 }
 
 /** 徽章短标签 */
@@ -16,6 +17,7 @@ export const STATUS_LABEL: Record<FeeStatus, string> = {
   [FeeStatus.Limited]: '限定ATM',
   [FeeStatus.Ftf]: '有FTF',
   [FeeStatus.Fee]: '收费',
+  [FeeStatus.NotApplicable]: '不适用',
 }
 
 /** 图例标签 */
@@ -25,6 +27,7 @@ export const STATUS_LEGEND: Record<FeeStatus, string> = {
   [FeeStatus.Limited]: '限定ATM免费',
   [FeeStatus.Ftf]: '有FTF（外币交易费）',
   [FeeStatus.Fee]: '收费',
+  [FeeStatus.NotApplicable]: '不适用',
 }
 
 /** 完整说明（悬停提示） */
@@ -34,6 +37,34 @@ export const STATUS_DESC: Record<FeeStatus, string> = {
   [FeeStatus.Limited]: '仅在指定银行的 ATM 上免手续费',
   [FeeStatus.Ftf]: '免提款手续费，但按金额收取外币交易费（Foreign Transaction Fee）',
   [FeeStatus.Fee]: '每笔提款收取手续费',
+  [FeeStatus.NotApplicable]: '不适用：该卡不支持在该类型ATM提款',
+}
+
+export const STATUS_VERDICT: Record<FeeStatus, { label: string; detail: string }> = {
+  [FeeStatus.Free]: {
+    label: '全额免费',
+    detail: '该类 ATM 提款完全免手续费',
+  },
+  [FeeStatus.Currency]: {
+    label: '指定币种免费',
+    detail: '只有指定币种免提款手续费，其余币种可能收取 FTF',
+  },
+  [FeeStatus.Limited]: {
+    label: '指定 ATM 免费',
+    detail: '只有指定 ATM 免提款手续费，其余 ATM 收取手续费',
+  },
+  [FeeStatus.Ftf]: {
+    label: '提款免费 · FTF 收费',
+    detail: '提款本身免费，但外币交易会按金额收费',
+  },
+  [FeeStatus.Fee]: {
+    label: '每笔提款收费',
+    detail: '使用该类 ATM 提款时会收取手续费',
+  },
+  [FeeStatus.NotApplicable]: {
+    label: '不适用',
+    detail: '该卡不支持在该类型ATM提款',
+  },
 }
 
 /** 状态语义色对应的 CSS 变量 */
@@ -43,6 +74,7 @@ export const STATUS_CSSVAR: Record<FeeStatus, string> = {
   [FeeStatus.Limited]: 'var(--stA)',
   [FeeStatus.Ftf]: 'var(--stT)',
   [FeeStatus.Fee]: 'var(--stP)',
+  [FeeStatus.NotApplicable]: 'var(--stN)',
 }
 
 /** 结果排序：免费优先 */
@@ -52,6 +84,7 @@ export const STATUS_ORDER: FeeStatus[] = [
   FeeStatus.Limited,
   FeeStatus.Ftf,
   FeeStatus.Fee,
+  FeeStatus.NotApplicable,
 ]
 
 export const ALL_STATUSES = STATUS_ORDER

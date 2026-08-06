@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
-import { ATM_TYPES, BANKS, FeeStatus, META } from '../data/banks'
+import { motion } from 'motion/react'
+import { BANKS, META } from '../data/banks'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { BankLogo } from './BankLogo'
 import { Panel, StepEyebrow } from './Panel'
 import { Pill } from './Pill'
 import { Receipt } from './Receipt'
-import { StatusChip } from './StatusBadge'
 
 const acMix = 'color-mix(in oklab, var(--ac) 12%, transparent)'
 
@@ -30,9 +29,6 @@ export function BankWizard() {
     setCardIndex(0)
     setTierIndex(0)
   }
-
-  const freeCount = ATM_TYPES.filter((a) => tier.fees[a.key].s === FeeStatus.Free).length
-  const signature = `${bank.id}|${cardType.id}|${tier.label}`
 
   return (
     <div>
@@ -123,33 +119,6 @@ export function BankWizard() {
           </div>
         </Panel>
       </div>
-
-      {/* 免费覆盖 */}
-      <Panel className="mx-auto mt-4 max-w-[520px] px-6 py-5">
-        <div className="flex items-baseline gap-2">
-          <span className="text-[12.5px] font-bold tracking-[2.5px] text-ac">免费覆盖</span>
-          <AnimatePresence mode="popLayout" initial={false}>
-            <motion.span
-              key={signature}
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.7 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="mono ml-auto text-[30px] font-extrabold leading-none"
-              style={{ color: 'var(--stF)' }}
-            >
-              {freeCount}
-            </motion.span>
-          </AnimatePresence>
-          <span className="text-[13.5px] text-mut">/ {ATM_TYPES.length} 类 ATM</span>
-        </div>
-        {/* 窄屏（<360px）下三列放不下不可断行的小片，退为两列 */}
-        <div className="mt-3.5 grid grid-cols-3 gap-2 max-[359px]:grid-cols-2">
-          {ATM_TYPES.map((a) => (
-            <StatusChip key={a.key} atm={a} status={tier.fees[a.key].s} note={tier.fees[a.key].n} />
-          ))}
-        </div>
-      </Panel>
 
       {/* 凭条（保留打印动画） */}
       <Receipt bank={bank} cardType={cardType} tier={tier} updatedAt={META.updatedAt} />

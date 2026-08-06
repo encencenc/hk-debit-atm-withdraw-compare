@@ -20,7 +20,20 @@ interface FlatRow {
   firstOfBank: boolean
 }
 
+type FreeFilterMode = 'full' | 'inclusive'
+
 const GRID = 'grid w-max grid-cols-[200px_240px_repeat(6,150px)]'
+
+const CARD_TYPE_ORDER = [
+  'MasterCard 扣账卡',
+  'Visa 扣账卡',
+  '银联扣账卡',
+  '银联双币提款卡',
+  '银联港币提款卡',
+  '银联人民币提款卡',
+  'PLUS提款卡',
+  '银通提款卡',
+]
 
 function DesktopTable({ rows }: { rows: FlatRow[] }) {
   return (
@@ -66,7 +79,7 @@ function DesktopTable({ rows }: { rows: FlatRow[] }) {
             const fee = r.tier.fees[a.key]
             return (
               <div key={a.key} className="flex items-center px-3 py-2.5">
-                <StatusBadge status={fee.s} note={fee.n} />
+                <StatusBadge status={fee.s} note={fee.n} contextLabel={a.label} />
               </div>
             )
           })}
@@ -116,13 +129,23 @@ export function ComparisonTable() {
   const [q, setQ] = useState('')
   const [cardFilter, setCardFilter] = useState<string>('all')
   const [freeKey, setFreeKey] = useState<AtmKey | null>(null)
+  const [freeMode, setFreeMode] = useState<FreeFilterMode>('full')
 
-  const cardTypes = [...new Set(BANKS.flatMap((b) => b.cardTypes.map((c) => c.label)))]
+  const cardTypes = [
+    ...new Set([
+      ...CARD_TYPE_ORDER,
+      ...BANKS.flatMap((b) => b.cardTypes.map((c) => c.label)),
+    ]),
+  ]
   const query = q.trim()
+  const matchesFreeMode = (status: FeeStatus) =>
+    freeMode === 'full'
+      ? status === FeeStatus.Free
+      : status === FeeStatus.Free || status === FeeStatus.Currency || status === FeeStatus.Limited
   const pass = (b: Bank, c: CardType, t: Tier) =>
     (!query || b.name.includes(query)) &&
     (cardFilter === 'all' || c.label === cardFilter) &&
-    (freeKey === null || t.fees[freeKey].s === FeeStatus.Free)
+    (freeKey === null || matchesFreeMode(t.fees[freeKey].s))
 
   const rows: FlatRow[] = []
   for (const b of BANKS) {
@@ -157,8 +180,21 @@ export function ComparisonTable() {
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-[7px]">
-          <span className="text-[12.5px] text-mut">仅看免费</span>
-          <Pill small label="不限" active={freeKey === null} onClick={() => setFreeKey(null)} />
+          <span className="text-[12.5px] text-mut">免费口径</span>
+          <Pill small label="完全免费" active={freeMode === 'full'} onClick={() => setFreeMode('full')} />
+          <Pill small label="所有免费" active={freeMode === 'inclusive'} onClick={() => setFreeMode('inclusive')} />
+        </div>
+        <div className="flex flex-wrap items-center gap-[7px]">
+          <span className="text-[12.5px] text-mut">免费 ATM</span>
+          <Pill
+            small
+            label="不限"
+            active={freeKey === null}
+            onClick={() => {
+              setFreeKey(null)
+              setFreeMode('full')
+            }}
+          />
           {ATM_TYPES.map((a) => (
             <Pill small key={a.key} label={a.short} active={freeKey === a.key} onClick={() => setFreeKey(a.key)} />
           ))}
@@ -170,6 +206,7 @@ export function ComparisonTable() {
               setQ('')
               setCardFilter('all')
               setFreeKey(null)
+              setFreeMode('full')
             }}
             className="ml-auto text-[13px] font-semibold text-ac hover:opacity-80"
           >

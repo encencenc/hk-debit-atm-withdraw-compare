@@ -16,13 +16,12 @@
   --mut: #5b655e;
   --ac: #188a5f;
 
-  /* 费用状态六级：F=免费 C=限定币种 A=限定ATM T=有FTF P=收费 N=不适用 */
+  /* 费用状态五级：F=免费 C=限定币种 A=限定ATM T=有FTF P=收费 */
   --stF: #128251;
   --stP: #bd4740;
   --stA: #916508;
   --stC: #187f8e;
   --stT: #7451a8;
-  --stN: #6f7772;
 
   --receipt-shadow: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.14));
 }
@@ -42,7 +41,6 @@
   --stA: #d9a63f;
   --stC: #5bb8c9;
   --stT: #b08bd9;
-  --stN: #aab3ad;
 
   --receipt-shadow: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.3));
 }
