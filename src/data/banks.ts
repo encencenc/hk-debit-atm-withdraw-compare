@@ -1018,7 +1018,7 @@ export const BANKS: Bank[] = [
     cardTypes: [
       {
         id: 'unionpay-debit',
-        label: '银联港币提款卡',
+        label: '银联扣账卡',
         tiers: [
           {
             label: '所有客户',
