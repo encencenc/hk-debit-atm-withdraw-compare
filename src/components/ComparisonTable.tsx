@@ -1,14 +1,18 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   ATM_TYPES,
   BANKS,
   FeeStatus,
+  META,
   type AtmKey,
   type Bank,
   type CardType,
   type Tier,
 } from '../data/banks'
 import { BankLogo } from './BankLogo'
+import { Icon } from './Icon'
+import { InfoNotes } from './InfoNotes'
+import { Panel } from './Panel'
 import { Pill } from './Pill'
 import { StatusBadge, StatusChip } from './StatusBadge'
 import { useIsDesktop } from '../hooks/useMediaQuery'
@@ -22,7 +26,7 @@ interface FlatRow {
 
 type FreeFilterMode = 'full' | 'inclusive'
 
-const GRID = 'grid w-max grid-cols-[200px_240px_repeat(6,150px)]'
+const GRID = 'grid w-max min-w-full grid-cols-[200px_236px_repeat(6,minmax(150px,1fr))]'
 
 const CARD_TYPE_ORDER = [
   'MasterCard 扣账卡',
@@ -37,18 +41,18 @@ const CARD_TYPE_ORDER = [
 
 function DesktopTable({ rows }: { rows: FlatRow[] }) {
   return (
-    <div className="max-h-[72vh] overflow-auto rounded-[14px] border border-bd bg-card">
+    <div className="card max-h-[72vh] overflow-auto">
       {/* 表头（吸顶） */}
-      <div className={`${GRID} sticky top-0 z-[5] border-b border-bd bg-card`}>
-        <div className="sticky left-0 z-[6] flex items-center bg-card p-3.5 text-[13px] font-bold">
-          银行
+      <div className={`${GRID} sticky top-0 z-[5] border-b border-bd bg-card2`}>
+        <div className="sticky left-0 z-[6] flex items-center bg-card2 px-4 py-3.5 text-xs font-bold text-mut">
+          银行机构
         </div>
-        <div className="sticky left-[200px] z-[6] flex items-center border-r border-bd2 bg-card p-3.5 text-[13px] font-bold">
-          卡类 · 户口类别
+        <div className="sticky left-[200px] z-[6] flex items-center border-r border-bd bg-card2 px-4 py-3.5 text-xs font-bold text-mut">
+          户口类别 · 卡类
         </div>
         {ATM_TYPES.map((a) => (
-          <div key={a.key} className="px-3 py-[11px]">
-            <div className="text-[13px] font-bold">{a.label}</div>
+          <div key={a.key} className="px-3 py-3 text-center">
+            <div className="text-[13.5px] font-bold text-tx">{a.label}</div>
             <div className="mt-0.5 text-[11px] text-mut">{a.sub}</div>
           </div>
         ))}
@@ -58,27 +62,30 @@ function DesktopTable({ rows }: { rows: FlatRow[] }) {
       {rows.map((r, i) => (
         <div
           key={`${r.bank.id}-${r.card.id}-${i}`}
-          className={GRID}
+          className={`${GRID} group`}
           style={{
-            borderTop: r.firstOfBank ? '2px solid var(--bd)' : '1px solid var(--bd2)',
+            borderTop: i === 0 ? undefined : r.firstOfBank ? '1px solid var(--bd)' : '1px solid var(--bd2)',
           }}
         >
-          <div className="sticky left-0 z-[2] flex items-center gap-2.5 bg-card px-3.5 py-3">
+          <div className="sticky left-0 z-[2] flex items-center gap-2.5 bg-card px-4 py-3 transition-colors group-hover:bg-card2">
             {r.firstOfBank && (
               <>
-                <BankLogo bank={r.bank} size={30} />
-                <span className="text-sm font-semibold leading-tight">{r.bank.name}</span>
+                <BankLogo bank={r.bank} size={34} />
+                <span className="text-[13.5px] font-semibold leading-tight">{r.bank.name}</span>
               </>
             )}
           </div>
-          <div className="sticky left-[200px] z-[2] flex flex-col justify-center gap-0.5 border-r border-bd2 bg-card px-3.5 py-2.5">
-            <span className="text-sm font-semibold leading-tight">{r.tier.label}</span>
+          <div className="sticky left-[200px] z-[2] flex flex-col justify-center gap-0.5 border-r border-bd bg-card px-4 py-2.5 transition-colors group-hover:bg-card2">
+            <span className="text-[13.5px] font-semibold leading-tight text-ac">{r.tier.label}</span>
             <span className="text-xs text-mut">{r.card.label}</span>
           </div>
           {ATM_TYPES.map((a) => {
             const fee = r.tier.fees[a.key]
             return (
-              <div key={a.key} className="flex items-center px-3 py-2.5">
+              <div
+                key={a.key}
+                className="flex items-center justify-center px-3 py-2.5 transition-colors group-hover:bg-card2"
+              >
                 <StatusBadge status={fee.s} note={fee.n} contextLabel={a.label} />
               </div>
             )
@@ -92,18 +99,15 @@ function DesktopTable({ rows }: { rows: FlatRow[] }) {
 /** 移动端：每个卡类/户口组合一张卡片，六类 ATM 状态成片展示 */
 function MobileCards({ rows }: { rows: FlatRow[] }) {
   return (
-    <div className="mt-4 flex flex-col gap-2.5">
+    <div className="flex flex-col gap-2.5">
       {rows.map((r, i) => (
-        <div
-          key={`${r.bank.id}-${r.card.id}-${i}`}
-          className="rounded-[14px] border border-bd bg-card p-3.5"
-        >
+        <div key={`${r.bank.id}-${r.card.id}-${i}`} className="card p-3.5">
           <div className="flex items-center gap-2.5">
-            <BankLogo bank={r.bank} size={34} />
+            <BankLogo bank={r.bank} size={36} />
             <div className="min-w-0">
-              <div className="text-[14.5px] font-semibold leading-tight">{r.bank.name}</div>
+              <div className="text-[14px] font-semibold leading-tight">{r.bank.name}</div>
               <div className="mt-0.5 text-xs text-mut">
-                {r.card.label} · {r.tier.label}
+                {r.card.label} · <span className="text-ac">{r.tier.label}</span>
               </div>
             </div>
           </div>
@@ -123,7 +127,16 @@ function MobileCards({ rows }: { rows: FlatRow[] }) {
   )
 }
 
-/** 完整对比表：搜索 + 卡类 / 仅看免费筛选 + 桌面吸附表格 / 移动卡片 */
+function FilterRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+      <span className="w-[72px] shrink-0 pt-1 text-[13px] font-semibold text-mut">{label}</span>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
+    </div>
+  )
+}
+
+/** 完整资费矩阵：搜索 + 卡类 / 免费 ATM 筛选 + 桌面吸附表格 / 移动卡片 */
 export function ComparisonTable() {
   const isDesktop = useIsDesktop()
   const [q, setQ] = useState('')
@@ -131,19 +144,15 @@ export function ComparisonTable() {
   const [freeKey, setFreeKey] = useState<AtmKey | null>(null)
   const [freeMode, setFreeMode] = useState<FreeFilterMode>('full')
 
-  const cardTypes = [
-    ...new Set([
-      ...CARD_TYPE_ORDER,
-      ...BANKS.flatMap((b) => b.cardTypes.map((c) => c.label)),
-    ]),
-  ]
-  const query = q.trim()
+  const existing = new Set(BANKS.flatMap((b) => b.cardTypes.map((c) => c.label)))
+  const cardTypes = [...new Set([...CARD_TYPE_ORDER, ...existing])].filter((ct) => existing.has(ct))
+  const query = q.trim().toLowerCase()
   const matchesFreeMode = (status: FeeStatus) =>
     freeMode === 'full'
       ? status === FeeStatus.Free
       : status === FeeStatus.Free || status === FeeStatus.Currency || status === FeeStatus.Limited
   const pass = (b: Bank, c: CardType, t: Tier) =>
-    (!query || b.name.includes(query)) &&
+    (!query || b.name.toLowerCase().includes(query)) &&
     (cardFilter === 'all' || c.label === cardFilter) &&
     (freeKey === null || matchesFreeMode(t.fees[freeKey].s))
 
@@ -160,76 +169,90 @@ export function ComparisonTable() {
   }
 
   const hasFilter = !!query || cardFilter !== 'all' || freeKey !== null
+  const resetFilters = () => {
+    setQ('')
+    setCardFilter('all')
+    setFreeKey(null)
+    setFreeMode('full')
+  }
 
   return (
     <div>
-      {/* 筛选栏 */}
-      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2.5 rounded-2xl border border-bd bg-card px-[18px] py-3.5">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="搜索银行…"
-          aria-label="搜索银行"
-          className="min-w-[130px] flex-[0_1_180px] rounded-[9px] border border-bd bg-card2 px-[13px] py-[7px] text-[13.5px] text-tx outline-none transition-colors focus:border-ac"
-        />
-        <div className="flex flex-wrap items-center gap-[7px]">
-          <span className="text-[12.5px] text-mut">卡类</span>
-          <Pill small label="全部" active={cardFilter === 'all'} onClick={() => setCardFilter('all')} />
-          {cardTypes.map((ct) => (
-            <Pill small key={ct} label={ct} active={cardFilter === ct} onClick={() => setCardFilter(ct)} />
-          ))}
+      {/* 筛选卡片 */}
+      <Panel className="p-4 sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <label className="relative flex flex-1 items-center">
+            <Icon name="search" size={18} className="pointer-events-none absolute left-3 text-faint" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="搜索银行（如 渣打、汇丰、Mox）…"
+              aria-label="搜索银行"
+              className="w-full rounded-xl border border-transparent bg-card2 py-2.5 pl-10 pr-3 text-sm font-medium text-tx outline-none transition-colors focus:border-ac focus:bg-card"
+            />
+          </label>
+          <div className="flex shrink-0">
+            <button
+              type="button"
+              onClick={resetFilters}
+              disabled={!hasFilter}
+              className="tactile inline-flex items-center gap-1.5 rounded-xl border border-bd bg-card px-3.5 py-2.5 text-[13px] font-semibold text-tx hover:border-ac/40 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Icon name="reset" size={16} />
+              重置筛选
+            </button>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-[7px]">
-          <span className="text-[12.5px] text-mut">免费口径</span>
-          <Pill small label="完全免费" active={freeMode === 'full'} onClick={() => setFreeMode('full')} />
-          <Pill small label="所有免费" active={freeMode === 'inclusive'} onClick={() => setFreeMode('inclusive')} />
+
+        <div className="mt-4 flex flex-col gap-3 border-t border-bd2 pt-4">
+          <FilterRow label="卡类">
+            <Pill small group="tbl-card" label="全部" active={cardFilter === 'all'} onClick={() => setCardFilter('all')} />
+            {cardTypes.map((ct) => (
+              <Pill small group="tbl-card" key={ct} label={ct} active={cardFilter === ct} onClick={() => setCardFilter(ct)} />
+            ))}
+          </FilterRow>
+          <FilterRow label="免费 ATM">
+            <Pill
+              small
+              group="tbl-free"
+              label="不限"
+              active={freeKey === null}
+              onClick={() => {
+                setFreeKey(null)
+                setFreeMode('full')
+              }}
+            />
+            {ATM_TYPES.map((a) => (
+              <Pill small group="tbl-free" key={a.key} label={a.short} active={freeKey === a.key} onClick={() => setFreeKey(a.key)} />
+            ))}
+          </FilterRow>
+          <FilterRow label="免费口径">
+            <Pill small group="tbl-mode" label="完全免费" active={freeMode === 'full'} onClick={() => setFreeMode('full')} />
+            <Pill small group="tbl-mode" label="含限定免费" active={freeMode === 'inclusive'} onClick={() => setFreeMode('inclusive')} />
+          </FilterRow>
         </div>
-        <div className="flex flex-wrap items-center gap-[7px]">
-          <span className="text-[12.5px] text-mut">免费 ATM</span>
-          <Pill
-            small
-            label="不限"
-            active={freeKey === null}
-            onClick={() => {
-              setFreeKey(null)
-              setFreeMode('full')
-            }}
-          />
-          {ATM_TYPES.map((a) => (
-            <Pill small key={a.key} label={a.short} active={freeKey === a.key} onClick={() => setFreeKey(a.key)} />
-          ))}
-        </div>
-        {hasFilter && (
-          <button
-            type="button"
-            onClick={() => {
-              setQ('')
-              setCardFilter('all')
-              setFreeKey(null)
-              setFreeMode('full')
-            }}
-            className="ml-auto text-[13px] font-semibold text-ac hover:opacity-80"
-          >
-            ✕ 清除筛选
-          </button>
-        )}
+      </Panel>
+
+      <div className="mx-1 mb-2 mt-5 flex flex-wrap items-center justify-between gap-2 text-xs text-mut">
+        <span>
+          共 <b className="mono text-sm text-ac">{rows.length}</b> 个卡类/户口组合
+          {isDesktop && <span className="text-mut/80"> · 表格可横向滚动，前两列已固定，悬停徽章看详情</span>}
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-ac" aria-hidden="true" />
+          数据截至 {META.updatedAt}
+        </span>
       </div>
 
       {rows.length === 0 ? (
         <div className="pb-6 pt-11 text-center text-sm text-mut">没有符合筛选条件的组合</div>
       ) : isDesktop ? (
-        <>
-          <div className="mx-1 mb-2 mt-4 flex flex-wrap items-center justify-between gap-2 text-[13px] text-mut">
-            <span>
-              共 <b className="text-tx">{rows.length}</b> 个卡类/户口组合
-            </span>
-            <span>表格可横向滚动 · 前两列已固定 · 悬停徽章查看费用详情</span>
-          </div>
-          <DesktopTable rows={rows} />
-        </>
+        <DesktopTable rows={rows} />
       ) : (
         <MobileCards rows={rows} />
       )}
+
+      <InfoNotes className="mt-6" />
     </div>
   )
 }

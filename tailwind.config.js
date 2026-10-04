@@ -13,11 +13,19 @@ export default {
         bd2: 'var(--bd2)',
         tx: 'var(--tx)',
         mut: 'var(--mut)',
+        faint: 'var(--faint)',
+        // ac：强调文字 / 描边；acs：实心按钮底色；acsoft：选中态浅底
         ac: 'var(--ac)',
+        acs: 'var(--acs)',
+        acsoft: 'var(--acsoft)',
       },
       fontFamily: {
-        sans: ['"Noto Sans SC"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+      },
+      boxShadow: {
+        card: 'var(--shadow-card)',
+        'card-hover': 'var(--shadow-card-hover)',
       },
     },
   },

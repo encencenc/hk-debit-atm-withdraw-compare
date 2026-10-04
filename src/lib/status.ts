@@ -1,15 +1,5 @@
 import { FeeStatus } from '../data/banks'
 
-/** 状态符号（无障碍：状态不只靠颜色区分） */
-export const STATUS_SYMBOL: Record<FeeStatus, string> = {
-  [FeeStatus.Free]: '✓',
-  [FeeStatus.Currency]: '◇',
-  [FeeStatus.Limited]: '◑',
-  [FeeStatus.Ftf]: '△',
-  [FeeStatus.Fee]: '✗',
-  [FeeStatus.NotApplicable]: '—',
-}
-
 /** 徽章短标签 */
 export const STATUS_LABEL: Record<FeeStatus, string> = {
   [FeeStatus.Free]: '免费',

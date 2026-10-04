@@ -3,61 +3,92 @@
 @tailwind utilities;
 
 /* ============================================================
-   设计令牌 —— 以 ATM收费对比.html 模板为基准
-   背景 / 卡片 / 文字为中性色，语义色只出现在费用状态上
+   设计令牌 —— 以 stitch 桌面重设计稿为基准
+   画布：浅灰网格 + 白卡片 + 发丝边框；强调色：森林绿
+   语义色只出现在费用状态上
    ============================================================ */
 :root {
-  --bg: #f2f5f3;
+  --bg: #f4f6f8;
   --card: #ffffff;
-  --card2: #edf1ee;
-  --bd: #d8dfda;
-  --bd2: #e5eae6;
-  --tx: #1b201d;
-  --mut: #5b655e;
-  --ac: #188a5f;
+  --card2: #f9fafb;
+  --bd: #e5e7eb;
+  --bd2: #f1f3f5;
+  --tx: #111827;
+  --mut: #6b7280;
+  --faint: #9ca3af;
+  --ac: #153e2c;
+  --acs: #153e2c;
+  --acsoft: #eef6f2;
 
   /* 费用状态六级：F=免费 C=限定币种 A=限定ATM T=有FTF P=收费 N=不适用 */
-  --stF: #128251;
-  --stP: #bd4740;
-  --stA: #916508;
-  --stC: #187f8e;
-  --stT: #7451a8;
-  --stN: #6f7772;
+  --stF: #1d6b47;
+  --stP: #e11d48;
+  --stA: #475569;
+  --stC: #0f766e;
+  --stT: #b45309;
+  --stN: #9ca3af;
+  /* 状态标记内符号色（实心圆上的反白） */
+  --on-st: #ffffff;
 
-  --receipt-shadow: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.14));
+  --grid-line: rgba(21, 62, 44, 0.045);
+  --glow: rgba(26, 67, 49, 0.07);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(17, 24, 39, 0.02);
+  --shadow-card-hover: 0 6px 20px -2px rgba(21, 62, 44, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+  --mouse-x: 50vw;
+  --mouse-y: 240px;
 }
 
 .dark {
-  --bg: #101312;
-  --card: #171b19;
-  --card2: #1f2522;
-  --bd: #2b322e;
-  --bd2: #232927;
-  --tx: #e9ece9;
-  --mut: #98a29b;
-  --ac: #2ea274;
+  --bg: #0b0f12;
+  --card: #141a21;
+  --card2: #1a222c;
+  --bd: #2a3542;
+  --bd2: #1c242e;
+  --tx: #f1f5f9;
+  --mut: #b4c0cf;
+  --faint: #8d9aad;
+  --ac: #34d399;
+  --acs: #047857;
+  --acsoft: #162922;
 
-  --stF: #46c58e;
-  --stP: #e07a74;
-  --stA: #d9a63f;
-  --stC: #5bb8c9;
-  --stT: #b08bd9;
-  --stN: #aab3ad;
+  --stF: #4ade80;
+  --stP: #fb7185;
+  --stA: #d5dde8;
+  --stC: #2dd4bf;
+  --stT: #fbbf24;
+  --stN: #a3afbf;
+  --on-st: #0b0f12;
 
-  --receipt-shadow: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.3));
+  --grid-line: rgba(255, 255, 255, 0.035);
+  --glow: rgba(52, 211, 153, 0.08);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 8px 24px -2px rgba(0, 0, 0, 0.6), 0 0 12px rgba(21, 62, 44, 0.2);
 }
 
 html {
   font-size: 16px;
 }
 
+/* 建筑网格底纹 + 跟随鼠标的柔光（--mouse-x/y 由 main.tsx 写入） */
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle 460px at var(--mouse-x) var(--mouse-y), var(--glow), transparent 70%),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 100% 100%, 28px 28px, 28px 28px;
+  background-position: 0 0, -1px -1px, -1px -1px;
+  background-attachment: fixed;
   color: var(--tx);
-  font-family: "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Plus Jakarta Sans", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   transition: background-color 0.25s, color 0.25s;
+}
+
+::selection {
+  background: var(--acs);
+  color: #fff;
 }
 
 button {
@@ -65,24 +96,95 @@ button {
 }
 
 input::placeholder {
-  color: var(--mut);
+  color: var(--faint);
 }
 
 /* 金额 / 日期 / 符号编号统一等宽 + tabular */
 .mono {
-  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   font-feature-settings: 'tnum' 1;
   font-variant-numeric: tabular-nums;
 }
 
-/* 滚动条（表格横向滚动区） */
+@layer components {
+  /* 发丝边框白卡片；.card-hover 额外提供悬停抬升 */
+  .card {
+    @apply rounded-2xl border border-bd bg-card shadow-card transition-[border-color,box-shadow,transform,background-color] duration-200;
+  }
+  .card-hover:hover {
+    border-color: color-mix(in oklab, var(--ac) 28%, var(--bd));
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-1.5px);
+  }
+  /* 卡片内的浅底数据块 */
+  .stat-block {
+    @apply rounded-xl border border-bd bg-card2 transition-colors duration-200;
+  }
+}
+
+/* 顶栏渐变模糊：两层 backdrop-filter，越靠上越模糊、越不透明，向下渐隐到内容区 */
+.header-glass::before,
+.header-glass::after {
+  position: absolute;
+  inset: 0 0 -32px 0;
+  z-index: -1;
+  content: '';
+  pointer-events: none;
+}
+.header-glass::before {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--bg) 88%, transparent) 0%,
+    color-mix(in oklab, var(--bg) 72%, transparent) 60%,
+    transparent 100%
+  );
+  -webkit-backdrop-filter: blur(6px) saturate(140%);
+  backdrop-filter: blur(6px) saturate(140%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+}
+.header-glass::after {
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 78%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 78%);
+}
+
+/* 按压反馈 */
+.tactile {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.18s ease,
+    color 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.tactile:active {
+  transform: scale(0.96);
+}
+
+/* 入场渐显 */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-entrance {
+  animation: fade-in-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 滚动条 */
 ::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
+  height: 6px;
+  width: 6px;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--bd);
-  border-radius: 5px;
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -103,7 +205,7 @@ input::placeholder {
   background: var(--card);
   border: 1px solid var(--bd);
   border-radius: 14px;
-  box-shadow: 0 18px 42px rgba(19, 35, 27, 0.16), 0 3px 10px rgba(19, 35, 27, 0.08);
+  box-shadow: 0 20px 40px -8px rgba(17, 24, 39, 0.14), 0 1px 3px rgba(17, 24, 39, 0.06);
   pointer-events: auto;
   animation: fee-popover-in 0.16s ease-out both;
 }
@@ -298,7 +400,13 @@ input::placeholder {
     scroll-behavior: auto;
   }
 
-  .fee-popover {
+  .fee-popover,
+  .animate-entrance {
     animation: none;
+  }
+
+  .tactile,
+  .card-hover:hover {
+    transform: none;
   }
 }

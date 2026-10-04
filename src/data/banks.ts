@@ -87,7 +87,7 @@ export interface DataMeta {
 }
 
 export const META: DataMeta = {
-  updatedAt: '2026年8月',
+  updatedAt: '2026年10月',
   source: '根据各银行公开资料整理，仅供参考，请以银行官网为准',
 }
 
@@ -222,7 +222,7 @@ export const BANKS: Bank[] = [
       },
       {
         id: 'atm',
-        label: '银联港币提款卡',
+        label: '银联双币提款卡',
         tiers: [
           {
             label: '普通客户',
@@ -335,10 +335,10 @@ export const BANKS: Bank[] = [
             fees: {
               hkBankTong: { s: F.Fee, n: '每次25港元' },
               hkHSBCHS: { s: F.Free },
-              macauBankTong: { s: F.Fee, n: '每次15港元 + 1% FTF' },
-              macauOther: { s: F.Fee, n: '每次15港元 + 1% FTF' },
-              mainland: { s: F.Fee, n: '每次15港元 + 1% FTF' },
-              overseas: { s: F.Fee, n: '每次15港元 + 1% FTF' },
+              macauBankTong: { s: F.Fee, n: '汇丰ATM每次20港元 + 1% FTF<br>其余ATM每次40港元 + 1% FTF' },
+              macauOther: { s: F.Fee, n: '汇丰ATM每次20港元 + 1% FTF<br>其余ATM每次40港元 + 1% FTF' },
+              mainland: { s: F.Fee, n: '汇丰ATM每次20港元 + 1% FTF<br>其余ATM每次40港元 + 1% FTF' },
+              overseas: { s: F.Fee, n: '汇丰ATM每次20港元 + 1% FTF<br>其余ATM每次40港元 + 1% FTF' },
             },
           },
         ],
@@ -883,7 +883,7 @@ export const BANKS: Bank[] = [
     cardTypes: [
       {
         id: 'atm',
-        label: '银联双币提款卡',
+        label: '银联港币提款卡',
         tiers: [
           {
             label: '所有客户',
@@ -1158,7 +1158,7 @@ export const BANKS: Bank[] = [
   },
   {
     id: 'airstar',
-    name: '象象银行',
+    name: '大象银行',
     cardTypes: [
       {
         id: 'debit',

@@ -13,7 +13,6 @@ import { type AtmType, FeeStatus } from '../data/banks'
 import {
   STATUS_CSSVAR,
   STATUS_LABEL,
-  STATUS_SYMBOL,
   STATUS_VERDICT,
   noteLines,
   statusTitle,
@@ -22,7 +21,6 @@ import {
 interface BadgeProps {
   status: FeeStatus
   note?: string
-  compact?: boolean
   className?: string
   contextLabel?: string
   showDetails?: boolean
@@ -131,15 +129,11 @@ function FeeDetailPopover({
     >
       <div className="fee-popover__header flex items-start gap-3">
         <span
-          className="fee-popover__icon mono flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] text-[17px] font-bold"
+          className="fee-popover__icon flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]"
           aria-hidden="true"
-          style={{
-            color,
-            background: `color-mix(in oklab, ${color} 14%, transparent)`,
-            border: `1px solid color-mix(in oklab, ${color} 36%, transparent)`,
-          }}
+          style={{ background: `color-mix(in oklab, ${color} 12%, var(--card))` }}
         >
-          {STATUS_SYMBOL[status]}
+          <StatusMark status={status} size={18} />
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
@@ -303,10 +297,44 @@ export function FeeDetailTrigger({
   )
 }
 
+/** 状态标记内的线性符号（16×16 画布，绘制于实心圆之上） */
+const MARK_GLYPH: Record<FeeStatus, string> = {
+  [FeeStatus.Free]: 'M4.9 8.2 7 10.3l4.1-4.5',
+  [FeeStatus.Currency]: 'M8 4.9 11.1 8 8 11.1 4.9 8Z',
+  [FeeStatus.Limited]: 'M8 4.7a3.3 3.3 0 0 1 0 6.6M8 4.7a3.3 3.3 0 0 0 0 6.6',
+  [FeeStatus.Ftf]: 'M8 4.8v3.6M8 11.1v.1',
+  [FeeStatus.Fee]: 'm5.6 5.6 4.8 4.8m0-4.8-4.8 4.8',
+  [FeeStatus.NotApplicable]: 'M5.2 8h5.6',
+}
+
+/** 状态标记：状态色实心圆 + 反白符号。形状与颜色双重编码，色弱也能区分 */
+export function StatusMark({ status, size = 14 }: { status: FeeStatus; size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      className="shrink-0"
+      aria-hidden="true"
+      style={{ color: 'var(--on-st)' }}
+    >
+      <circle cx="8" cy="8" r="8" fill={STATUS_CSSVAR[status]} />
+      {status === FeeStatus.Limited && <path d="M8 4.7a3.3 3.3 0 0 1 0 6.6Z" fill="currentColor" />}
+      <path
+        d={MARK_GLYPH[status]}
+        fill={status === FeeStatus.Currency ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth={1.7}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export function StatusBadge({
   status,
   note,
-  compact = false,
   className = '',
   contextLabel,
   showDetails = true,
@@ -319,19 +347,14 @@ export function StatusBadge({
       contextLabel={contextLabel}
       showDetails={showDetails}
       ariaLabel={statusTitle(status, note)}
-      className={`inline-flex cursor-default items-center whitespace-nowrap rounded-full py-1 text-[12.5px] font-semibold leading-normal ${
-        compact ? 'px-[9px]' : 'gap-1.5 px-[11px]'
-      } ${className}`}
+      className={`inline-flex cursor-default items-center gap-1.5 whitespace-nowrap rounded-full py-[3px] pl-[4px] pr-2.5 text-[12.5px] font-medium leading-normal ${className}`}
       style={{
-        color,
-        background: `color-mix(in oklab, ${color} 13%, transparent)`,
-        border: `1px solid color-mix(in oklab, ${color} 40%, transparent)`,
+        color: `color-mix(in oklab, ${color} 82%, var(--tx))`,
+        background: `color-mix(in oklab, ${color} 11%, var(--card))`,
       }}
     >
-      <span className="mono" aria-hidden="true">
-        {STATUS_SYMBOL[status]}
-      </span>
-      {compact ? <span className="sr-only">{STATUS_LABEL[status]}</span> : <span>{STATUS_LABEL[status]}</span>}
+      <StatusMark status={status} />
+      <span>{STATUS_LABEL[status]}</span>
     </FeeDetailTrigger>
   )
 }
@@ -347,7 +370,6 @@ export function StatusChip({
   note?: string
   showDetails?: boolean
 }) {
-  const color = STATUS_CSSVAR[status]
   return (
     <FeeDetailTrigger
       status={status}
@@ -355,16 +377,9 @@ export function StatusChip({
       contextLabel={atm.label}
       showDetails={showDetails}
       ariaLabel={`${atm.label}: ${statusTitle(status, note)}`}
-      className="inline-flex cursor-default items-center justify-center gap-1.5 whitespace-nowrap rounded-[9px] px-2 py-1.5 text-[12.5px] font-semibold"
-      style={{
-        color,
-        background: `color-mix(in oklab, ${color} 12%, transparent)`,
-        border: `1px solid color-mix(in oklab, ${color} 38%, transparent)`,
-      }}
+      className="inline-flex cursor-default items-center gap-1.5 whitespace-nowrap rounded-lg border border-bd bg-card2 px-2 py-1.5 text-[12.5px] font-medium text-tx"
     >
-      <b className="mono" aria-hidden="true">
-        {STATUS_SYMBOL[status]}
-      </b>
+      <StatusMark status={status} />
       <span>{atm.short}</span>
     </FeeDetailTrigger>
   )

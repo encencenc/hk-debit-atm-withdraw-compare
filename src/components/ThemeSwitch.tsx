@@ -1,13 +1,13 @@
-import { motion } from 'motion/react'
 import type { ThemeMode } from '../hooks/useTheme'
+import { Icon, type IconName } from './Icon'
 
-const MODES: { key: ThemeMode; label: string }[] = [
-  { key: 'light', label: '浅色' },
-  { key: 'auto', label: '自动' },
-  { key: 'dark', label: '深色' },
-]
+const MODES: Record<ThemeMode, { label: string; badge: string; icon: IconName; next: ThemeMode }> = {
+  auto: { label: '自动', badge: 'AUTO', icon: 'auto', next: 'light' },
+  light: { label: '浅色', badge: 'LIGHT', icon: 'sun', next: 'dark' },
+  dark: { label: '深色', badge: 'DARK', icon: 'moon', next: 'auto' },
+}
 
-/** 主题切换胶囊组：浅色 / 自动 / 深色（滑动胶囊指示） */
+/** 单按钮循环切换主题：自动 → 浅色 → 深色 → 自动 */
 export function ThemeSwitch({
   mode,
   setTheme,
@@ -15,36 +15,20 @@ export function ThemeSwitch({
   mode: ThemeMode
   setTheme: (m: ThemeMode) => void
 }) {
+  const m = MODES[mode]
   return (
-    <div
-      role="group"
-      aria-label="主题模式"
-      className="inline-flex gap-1 rounded-full border border-bd bg-card p-1"
+    <button
+      type="button"
+      onClick={() => setTheme(m.next)}
+      title={`主题：${m.label}（点击切换为${MODES[m.next].label}）`}
+      aria-label={`主题：${m.label}，点击切换为${MODES[m.next].label}`}
+      className="tactile inline-flex select-none items-center gap-2 rounded-xl border border-bd bg-card px-3.5 py-2 text-[13px] font-semibold text-tx shadow-sm hover:border-ac/50"
     >
-      {MODES.map((m) => {
-        const active = m.key === mode
-        return (
-          <button
-            key={m.key}
-            type="button"
-            onClick={() => setTheme(m.key)}
-            aria-pressed={active}
-            className={`relative rounded-full px-4 py-[7px] text-[13.5px] font-semibold transition-colors ${
-              active ? 'text-white' : 'text-mut hover:text-tx'
-            }`}
-          >
-            {active && (
-              <motion.span
-                layoutId="theme-pill"
-                className="absolute inset-0 rounded-full bg-ac"
-                transition={{ type: 'spring', stiffness: 400, damping: 34 }}
-                aria-hidden="true"
-              />
-            )}
-            <span className="relative z-[1]">{m.label}</span>
-          </button>
-        )
-      })}
-    </div>
+      <Icon name={m.icon} size={18} className="text-ac" />
+      <span>{m.label}</span>
+      <span className="mono hidden rounded bg-card2 px-1 text-[10px] tracking-tight text-faint sm:inline">
+        {m.badge}
+      </span>
+    </button>
   )
 }
