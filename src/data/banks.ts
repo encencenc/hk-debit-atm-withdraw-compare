@@ -197,31 +197,40 @@ export const BANKS: Bank[] = [
             label: '普通客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee },
-              macauBankTong: { s: F.Fee },
-              macauOther: { s: F.Fee },
-              mainland: { s: F.Fee },
-              overseas: { s: F.Fee },
+              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
+              macauBankTong: { s: F.Fee, n: '每次28港元' },
+              macauOther: { s: F.Fee, n: '每次50港元 + 0.95% FTF' },
+              mainland: {
+                s: F.Fee,
+                n: '人民币余额足够：每次47人民币<br>人民币余额不足：每次47人民币 + 0.95% FTF',
+              },
+              overseas: {
+                s: F.Fee,
+                n: '支援货币且对应外币账户余额足够：每次50港元或等值外币<br>余额不足或非支援货币：每次50港元或等值外币 + 0.95% FTF<br>支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元',
+              },
             },
           },
           {
             label: 'Premium理财/优先理财/优先私人理财/私人银行',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
               macauBankTong: { s: F.Free },
               macauOther: { s: F.Ftf, n: '免手续费但有 0.95% FTF' },
-              mainland: { s: F.Free },
+              mainland: {
+                s: F.Free,
+                n: '人民币余额足够：免费<br>人民币余额不足：免手续费但有0.95% FTF',
+              },
               overseas: {
                 s: F.Currency,
-                n: '仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元<br>其余币种收取 0.95% FTF',
+                n: '仅限支援货币且对应外币账户余额足够：免费<br>余额不足或非支援货币：免手续费但有0.95% FTF<br>支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元',
               },
             },
           },
         ],
       },
       {
-        id: 'atm',
+        id: 'atm-dual',
         label: '银联双币提款卡',
         tiers: [
           {
@@ -229,7 +238,35 @@ export const BANKS: Bank[] = [
             fees: {
               hkBankTong: { s: F.Free },
               hkHSBCHS: { s: F.Fee, n: '每次15港元' },
-              macauBankTong: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
+              macauBankTong: { s: F.Fee, n: '每次28港元' },
+              macauOther: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
+              mainland: { s: F.Fee, n: '每次12人民币 + 0.5% FTF' },
+              overseas: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
+            },
+          },
+          {
+            label: 'Premium理财/优先理财/优先私人理财/私人银行',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次15港元' },
+              macauBankTong: { s: F.Free },
+              macauOther: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
+              mainland: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
+              overseas: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
+            },
+          },
+        ],
+      },
+      {
+        id: 'atm',
+        label: '银联港币提款卡',
+        tiers: [
+          {
+            label: '普通客户',
+            fees: {
+              hkBankTong: { s: F.Free },
+              hkHSBCHS: { s: F.Fee, n: '每次15港元' },
+              macauBankTong: { s: F.Fee, n: '每次28港元' },
               macauOther: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
               mainland: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
               overseas: { s: F.Fee, n: '每次15港元 + 0.5% FTF' },
@@ -240,7 +277,7 @@ export const BANKS: Bank[] = [
             fees: {
               hkBankTong: { s: F.Free },
               hkHSBCHS: { s: F.Fee, n: '每次15港元' },
-              macauBankTong: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
+              macauBankTong: { s: F.Free },
               macauOther: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
               mainland: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
               overseas: { s: F.Ftf, n: '免手续费但有 0.5% FTF' },
