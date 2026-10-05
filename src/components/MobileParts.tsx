@@ -10,10 +10,11 @@ import { STATUS_CSSVAR, STATUS_VERDICT, noteLines } from '../lib/status'
 const SCROLL_OFFSET = 80
 
 /** 查询工作区的展开 / 收起；finish() 收起后若结果摘要不在视口上半部，平滑滚动过去。
- *  revealed：结果区是否已出现——初始隐藏，首次 finish() 后才展开，之后再修改条件也保持可见 */
+ *  revealed：结果区是否显示——仅在工作区收起时显示，初始及每次点「修改」重新选择时都隐藏；
+ *  done：是否已完成过一次选择（用于保留已选状态与「查看结果」按钮） */
 export function useCollapsibleQuery() {
   const [editing, setEditing] = useState(true)
-  const [revealed, setRevealed] = useState(false)
+  const [done, setDone] = useState(false)
   const resultRef = useRef<HTMLDivElement>(null)
   const scrollPending = useRef(false)
 
@@ -30,13 +31,14 @@ export function useCollapsibleQuery() {
 
   return {
     editing,
-    revealed,
+    revealed: !editing,
+    done,
     resultRef,
     edit: () => setEditing(true),
     finish: () => {
       scrollPending.current = true
       setEditing(false)
-      setRevealed(true)
+      setDone(true)
     },
   }
 }

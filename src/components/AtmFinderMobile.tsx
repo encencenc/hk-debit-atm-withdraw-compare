@@ -55,7 +55,7 @@ export function AtmFinderMobile({
   dist,
 }: Props) {
   // 初始不预选 ATM、不展示结果：选定 ATM 后结果区才展开
-  const { editing, revealed, resultRef, edit, finish } = useCollapsibleQuery()
+  const { editing, revealed, done, resultRef, edit, finish } = useCollapsibleQuery()
   const open = useOpenSet()
   const freeCount = allFees.filter((f) => f.s === FeeStatus.Free).length
 
@@ -83,7 +83,7 @@ export function AtmFinderMobile({
           <MobileStep step={1} title="选择提款 ATM 类型">
             <div className="grid grid-cols-2 gap-1.5">
               {ATM_TYPES.map((a) => {
-                const sel = revealed && a.key === atm.key
+                const sel = done && a.key === atm.key
                 return (
                   <button
                     key={a.key}
@@ -114,7 +114,7 @@ export function AtmFinderMobile({
               })}
             </div>
           </MobileStep>
-          {revealed && <MobileFinishButton label="查看各行收费" onClick={finish} />}
+          {done && <MobileFinishButton label="查看各行收费" onClick={finish} />}
         </motion.div>
       )}
 
