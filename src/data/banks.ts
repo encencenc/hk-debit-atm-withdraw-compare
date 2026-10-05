@@ -205,7 +205,7 @@ export const BANKS: Bank[] = [
             },
           },
           {
-            label: 'Premium 理财及以上',
+            label: 'Premium理财/优先理财/优先私人理财/私人银行',
             fees: {
               hkBankTong: { s: F.Free },
               hkHSBCHS: { s: F.Free },
@@ -236,7 +236,7 @@ export const BANKS: Bank[] = [
             },
           },
           {
-            label: 'Premium 理财及以上',
+            label: 'Premium理财/优先理财/优先私人理财/私人银行',
             fees: {
               hkBankTong: { s: F.Free },
               hkHSBCHS: { s: F.Fee, n: '每次15港元' },

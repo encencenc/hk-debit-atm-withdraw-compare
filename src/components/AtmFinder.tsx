@@ -40,6 +40,13 @@ export interface CardRow {
 
 export type StatusFilter = 'all' | 'free' | 'conditional' | 'charged'
 
+const SEARCH_ALIASES: [string, string][] = [
+  ['premier', '卓越'],
+  ['priority', '优先'],
+  ['prestige', '优越'],
+  ['private', '私人银行'],
+]
+
 const STATUS_FILTERS: { key: StatusFilter; label: string; match: (s: FeeStatus) => boolean }[] = [
   { key: 'all', label: '全部', match: () => true },
   { key: 'free', label: '完全免费', match: (s) => s === FeeStatus.Free },
@@ -80,14 +87,17 @@ export function AtmFinder() {
   const atm = ATM_TYPES.find((a) => a.key === key)!
   const allRows = buildRows(key)
   const query = q.trim().toLowerCase()
+  // 英文关键词模糊映射到中文户口名（如 premier → 卓越）
+  const terms = [query, ...SEARCH_ALIASES.filter(([en]) => query && en.startsWith(query)).map(([, zh]) => zh)]
+  const hit = (s: string) => terms.some((t) => s.toLowerCase().includes(t))
   const match = STATUS_FILTERS.find((f) => f.key === filter)!.match
   const rows = allRows.filter(
     (r) =>
       r.fees.some((f) => match(f.s)) &&
       (!query ||
-        r.bank.name.toLowerCase().includes(query) ||
-        r.card.label.toLowerCase().includes(query) ||
-        r.card.tiers.some((t) => t.label.toLowerCase().includes(query))),
+        hit(r.bank.name) ||
+        hit(r.card.label) ||
+        r.card.tiers.some((t) => hit(t.label))),
   )
 
   // 只有「免费且无附加条件」才是一行卡片；收费 / 不适用即使没有备注也要说明情况

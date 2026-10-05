@@ -12,14 +12,14 @@ interface Props {
 export function AtmIcon({ atm, size = 22, className = '' }: Props) {
   if (atm.iconKind === 'pair' && atm.icons) {
     return (
-      <span className={`inline-flex items-center gap-1 ${className}`}>
+      <span className={`inline-flex min-w-0 max-w-full items-center justify-center gap-0.5 ${className}`}>
         {atm.icons.map((src) => (
           <img
             key={src}
             src={assetUrl(src)}
             alt=""
             style={{ height: size, width: 'auto' }}
-            className="object-contain"
+            className="min-w-0 shrink object-contain"
           />
         ))}
       </span>
