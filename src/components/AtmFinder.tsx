@@ -19,6 +19,7 @@ import {
   noteLines,
 } from '../lib/status'
 import { CHARGED, CONDITIONAL_FREE } from '../lib/stats'
+import { AtmFinderMobile } from './AtmFinderMobile'
 import { AtmIcon } from './AtmIcon'
 import { BankLogo } from './BankLogo'
 import { Icon } from './Icon'
@@ -26,7 +27,7 @@ import { InfoNotes } from './InfoNotes'
 import { Panel, StepTitle } from './Panel'
 import { StatusBadge, StatusMark } from './StatusBadge'
 
-interface CardRow {
+export interface CardRow {
   id: string
   bank: Bank
   card: CardType
@@ -37,7 +38,7 @@ interface CardRow {
   best: FeeStatus
 }
 
-type StatusFilter = 'all' | 'free' | 'conditional' | 'charged'
+export type StatusFilter = 'all' | 'free' | 'conditional' | 'charged'
 
 const STATUS_FILTERS: { key: StatusFilter; label: string; match: (s: FeeStatus) => boolean }[] = [
   { key: 'all', label: '全部', match: () => true },
@@ -134,7 +135,6 @@ export function AtmFinder() {
       atm={atm}
       tierIndex={tierIndexOf(r)}
       onTier={(i) => setTierSel((m) => ({ ...m, [r.id]: i }))}
-      showDetails={isDesktop}
     />
   )
 
@@ -144,6 +144,28 @@ export function AtmFinder() {
     status: s,
     count: allFees.filter((f) => f.s === s).length,
   })).filter((d) => d.count > 0)
+
+  // 移动端：同一份筛选 / 排序 / 户口逻辑，换成清单式的信息结构（桌面 / 平板布局保持不变）
+  if (!isDesktop) {
+    return (
+      <AtmFinderMobile
+        atm={atm}
+        pickAtm={setKey}
+        filters={STATUS_FILTERS}
+        filter={filter}
+        setFilter={setFilter}
+        q={q}
+        setQ={setQ}
+        rowCount={rows.length}
+        simpleRows={simpleRows}
+        detailRows={detailRows}
+        tierIndexOf={tierIndexOf}
+        onTier={(id, i) => setTierSel((m) => ({ ...m, [id]: i }))}
+        allFees={allFees}
+        dist={dist}
+      />
+    )
+  }
 
   return (
     <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
@@ -318,13 +340,11 @@ function BankCardResult({
   atm,
   tierIndex,
   onTier,
-  showDetails,
 }: {
   row: CardRow
   atm: AtmType
   tierIndex: number
   onTier: (i: number) => void
-  showDetails: boolean
 }) {
   const fee = row.uniform ? row.fees[0] : row.fees[tierIndex]
   const lines = noteLines(fee.n)
@@ -342,7 +362,7 @@ function BankCardResult({
           status={fee.s}
           note={fee.n}
           contextLabel={atm.label}
-          showDetails={showDetails}
+          showDetails={false}
           className="shrink-0"
         />
       </div>

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { Fragment, useState, type ReactNode } from 'react'
 import {
   ATM_TYPES,
   BANKS,
@@ -12,6 +12,7 @@ import {
 import { BankLogo } from './BankLogo'
 import { Icon } from './Icon'
 import { InfoNotes } from './InfoNotes'
+import { ToggleHint } from './MobileParts'
 import { Panel } from './Panel'
 import { Pill } from './Pill'
 import { StatusBadge, StatusChip } from './StatusBadge'
@@ -96,34 +97,108 @@ function DesktopTable({ rows }: { rows: FlatRow[] }) {
   )
 }
 
-/** 移动端：每个卡类/户口组合一张卡片，六类 ATM 状态成片展示 */
-function MobileCards({ rows }: { rows: FlatRow[] }) {
+/** 移动端：一个清单容器，按银行分组；每个卡类/户口组合一行，六类 ATM 状态点按看详情 */
+function MobileList({ rows }: { rows: FlatRow[] }) {
   return (
-    <div className="flex flex-col gap-2.5">
+    <section className="overflow-hidden rounded-[20px] border border-bd bg-card shadow-card">
       {rows.map((r, i) => (
-        <div key={`${r.bank.id}-${r.card.id}-${i}`} className="card p-3.5">
-          <div className="flex items-center gap-2.5">
-            <BankLogo bank={r.bank} size={36} />
-            <div className="min-w-0">
-              <div className="text-[14px] font-semibold leading-tight">{r.bank.name}</div>
-              <div className="mt-0.5 text-xs text-mut">
-                {r.card.label} · <span className="text-ac">{r.tier.label}</span>
-              </div>
+        <Fragment key={`${r.bank.id}-${r.card.id}-${i}`}>
+          {r.firstOfBank && (
+            <div
+              className={`flex items-center gap-2.5 bg-card2 px-4 py-2 ${i > 0 ? 'border-t border-bd' : ''}`}
+            >
+              <BankLogo bank={r.bank} size={28} />
+              <span className="text-[13.5px] font-bold leading-tight">{r.bank.name}</span>
+            </div>
+          )}
+          <div className="border-t border-bd2 px-4 py-2.5">
+            <div className="text-[13px] leading-snug">
+              <span className="font-semibold text-ac">{r.tier.label}</span>
+              <span className="text-[12px] text-mut"> · {r.card.label}</span>
+            </div>
+            <div className="-mx-1 mt-1 grid grid-cols-3 gap-x-1.5 max-[359px]:grid-cols-2">
+              {ATM_TYPES.map((a) => (
+                <StatusChip
+                  key={a.key}
+                  bare
+                  atm={a}
+                  status={r.tier.fees[a.key].s}
+                  note={r.tier.fees[a.key].n}
+                />
+              ))}
             </div>
           </div>
-          <div className="mt-3 grid grid-cols-3 gap-[7px] max-[359px]:grid-cols-2">
-            {ATM_TYPES.map((a) => (
-              <StatusChip
-                key={a.key}
-                atm={a}
-                status={r.tier.fees[a.key].s}
-                note={r.tier.fees[a.key].n}
-              />
-            ))}
+        </Fragment>
+      ))}
+    </section>
+  )
+}
+
+/** 移动端筛选：搜索常显，其余筛选收成一行摘要，点按展开 */
+function MobileFilters({
+  q,
+  setQ,
+  summary,
+  hasFilter,
+  resetFilters,
+  children,
+}: {
+  q: string
+  setQ: (q: string) => void
+  summary: string
+  hasFilter: boolean
+  resetFilters: () => void
+  children: ReactNode
+}) {
+  const [open, setOpen] = useState(false)
+  return (
+    <section className="rounded-[18px] border border-bd2 bg-card shadow-card">
+      <div className="p-3">
+        <label className="relative flex items-center">
+          <Icon name="search" size={17} className="pointer-events-none absolute left-3 text-faint" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="搜索银行（如 渣打、汇丰、Mox）…"
+            aria-label="搜索银行"
+            className="w-full rounded-[10px] border border-transparent bg-card2 py-2 pl-9 pr-3 text-sm font-medium text-tx outline-none transition-colors focus:border-ac focus:bg-card"
+          />
+        </label>
+      </div>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 border-t border-bd2 px-3.5 py-2.5 text-left"
+      >
+        <Icon name="filter" size={15} className="text-ac" />
+        <span className="min-w-0 flex-1 truncate text-[12.5px] font-medium text-tx">{summary}</span>
+        <ToggleHint open={open} closedLabel="筛选" />
+      </button>
+      {open && (
+        <div className="flex flex-col gap-3 border-t border-bd2 px-3.5 pb-3.5 pt-3">
+          {children}
+          <div className="flex gap-2 pt-1">
+            <button
+              type="button"
+              onClick={resetFilters}
+              disabled={!hasFilter}
+              className="tactile inline-flex items-center gap-1.5 rounded-[10px] border border-bd bg-card px-3 py-2 text-[13px] font-semibold text-tx disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Icon name="reset" size={15} />
+              重置
+            </button>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="tactile flex-1 rounded-[10px] bg-acs py-2 text-[13px] font-semibold text-white"
+            >
+              完成
+            </button>
           </div>
         </div>
-      ))}
-    </div>
+      )}
+    </section>
   )
 }
 
@@ -176,9 +251,46 @@ export function ComparisonTable() {
     setFreeMode('full')
   }
 
+  const filterRows = (
+    <>
+      <FilterRow label="卡类">
+        <Pill small group="tbl-card" label="全部" active={cardFilter === 'all'} onClick={() => setCardFilter('all')} />
+        {cardTypes.map((ct) => (
+          <Pill small group="tbl-card" key={ct} label={ct} active={cardFilter === ct} onClick={() => setCardFilter(ct)} />
+        ))}
+      </FilterRow>
+      <FilterRow label="免费 ATM">
+        <Pill
+          small
+          group="tbl-free"
+          label="不限"
+          active={freeKey === null}
+          onClick={() => {
+            setFreeKey(null)
+            setFreeMode('full')
+          }}
+        />
+        {ATM_TYPES.map((a) => (
+          <Pill small group="tbl-free" key={a.key} label={a.short} active={freeKey === a.key} onClick={() => setFreeKey(a.key)} />
+        ))}
+      </FilterRow>
+      <FilterRow label="免费口径">
+        <Pill small group="tbl-mode" label="完全免费" active={freeMode === 'full'} onClick={() => setFreeMode('full')} />
+        <Pill small group="tbl-mode" label="含限定免费" active={freeMode === 'inclusive'} onClick={() => setFreeMode('inclusive')} />
+      </FilterRow>
+    </>
+  )
+  // 移动端筛选收起时的一行摘要
+  const freeAtm = ATM_TYPES.find((a) => a.key === freeKey)
+  const filterSummary = [
+    `卡类：${cardFilter === 'all' ? '全部' : cardFilter}`,
+    `免费 ATM：${freeAtm ? `${freeAtm.short}（${freeMode === 'full' ? '完全免费' : '含限定免费'}）` : '不限'}`,
+  ].join(' · ')
+
   return (
     <div>
       {/* 筛选卡片 */}
+      {isDesktop ? (
       <Panel className="p-4 sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <label className="relative flex flex-1 items-center">
@@ -204,34 +316,13 @@ export function ComparisonTable() {
           </div>
         </div>
 
-        <div className="mt-4 flex flex-col gap-3 border-t border-bd2 pt-4">
-          <FilterRow label="卡类">
-            <Pill small group="tbl-card" label="全部" active={cardFilter === 'all'} onClick={() => setCardFilter('all')} />
-            {cardTypes.map((ct) => (
-              <Pill small group="tbl-card" key={ct} label={ct} active={cardFilter === ct} onClick={() => setCardFilter(ct)} />
-            ))}
-          </FilterRow>
-          <FilterRow label="免费 ATM">
-            <Pill
-              small
-              group="tbl-free"
-              label="不限"
-              active={freeKey === null}
-              onClick={() => {
-                setFreeKey(null)
-                setFreeMode('full')
-              }}
-            />
-            {ATM_TYPES.map((a) => (
-              <Pill small group="tbl-free" key={a.key} label={a.short} active={freeKey === a.key} onClick={() => setFreeKey(a.key)} />
-            ))}
-          </FilterRow>
-          <FilterRow label="免费口径">
-            <Pill small group="tbl-mode" label="完全免费" active={freeMode === 'full'} onClick={() => setFreeMode('full')} />
-            <Pill small group="tbl-mode" label="含限定免费" active={freeMode === 'inclusive'} onClick={() => setFreeMode('inclusive')} />
-          </FilterRow>
-        </div>
+        <div className="mt-4 flex flex-col gap-3 border-t border-bd2 pt-4">{filterRows}</div>
       </Panel>
+      ) : (
+        <MobileFilters q={q} setQ={setQ} summary={filterSummary} hasFilter={hasFilter} resetFilters={resetFilters}>
+          {filterRows}
+        </MobileFilters>
+      )}
 
       <div className="mx-1 mb-2 mt-5 flex flex-wrap items-center justify-between gap-2 text-xs text-mut">
         <span>
@@ -249,10 +340,10 @@ export function ComparisonTable() {
       ) : isDesktop ? (
         <DesktopTable rows={rows} />
       ) : (
-        <MobileCards rows={rows} />
+        <MobileList rows={rows} />
       )}
 
-      <InfoNotes className="mt-6" />
+      <InfoNotes variant={isDesktop ? 'default' : 'mobile'} className={isDesktop ? 'mt-6' : 'mt-5'} />
     </div>
   )
 }

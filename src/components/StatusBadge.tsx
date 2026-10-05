@@ -364,11 +364,14 @@ export function StatusChip({
   status,
   note,
   showDetails = true,
+  bare = false,
 }: {
   atm: AtmType
   status: FeeStatus
   note?: string
   showDetails?: boolean
+  /** 无边框样式：用于清单行内，避免框中套框 */
+  bare?: boolean
 }) {
   return (
     <FeeDetailTrigger
@@ -377,7 +380,11 @@ export function StatusChip({
       contextLabel={atm.label}
       showDetails={showDetails}
       ariaLabel={`${atm.label}: ${statusTitle(status, note)}`}
-      className="inline-flex cursor-default items-center gap-1.5 whitespace-nowrap rounded-lg border border-bd bg-card2 px-2 py-1.5 text-[12.5px] font-medium text-tx"
+      className={
+        bare
+          ? 'inline-flex cursor-default items-center gap-1.5 whitespace-nowrap rounded-md px-1 py-1.5 text-[12.5px] font-medium text-tx active:bg-card2'
+          : 'inline-flex cursor-default items-center gap-1.5 whitespace-nowrap rounded-lg border border-bd bg-card2 px-2 py-1.5 text-[12.5px] font-medium text-tx'
+      }
     >
       <StatusMark status={status} />
       <span>{atm.short}</span>

@@ -6,6 +6,7 @@ import { STATUS_CSSVAR, STATUS_VERDICT, noteLines } from '../lib/status'
 import { tierSummary } from '../lib/stats'
 import { AtmIcon } from './AtmIcon'
 import { BankLogo } from './BankLogo'
+import { BankWizardMobile } from './BankWizardMobile'
 import { Icon } from './Icon'
 import { InfoNotes } from './InfoNotes'
 import { Panel, StepTitle } from './Panel'
@@ -48,6 +49,30 @@ export function BankWizard() {
     setBankId(id)
     setCardIndex(0)
     setTierIndex(0)
+  }
+
+  // 移动端：同一份状态与判断逻辑，换成清单式的信息结构（桌面 / 平板布局保持不变）
+  if (!isDesktop) {
+    return (
+      <BankWizardMobile
+        bank={bank}
+        cardType={cardType}
+        tier={tier}
+        cardIndex={cardIndex}
+        tierIndex={tierIndex}
+        pickBank={pickBank}
+        pickCard={(i) => {
+          setCardIndex(i)
+          setTierIndex(0)
+        }}
+        pickTier={setTierIndex}
+        q={q}
+        setQ={setQ}
+        searchRef={searchRef}
+        filtered={filtered}
+        signature={signature}
+      />
+    )
   }
 
   return (
@@ -180,7 +205,6 @@ export function BankWizard() {
             <Icon name="atm" size={18} className="text-ac" />
             <h3 className="text-sm font-bold tracking-tight">各类 ATM 提款收费明细</h3>
           </div>
-          <span className="hidden text-xs text-mut sm:inline">悬停状态徽章可查看费用详情</span>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -200,7 +224,6 @@ export function BankWizard() {
                   // 双栏时同一行的另一张卡片若需上下排布，本卡也跟随
                   (isDesktop && needsStack(tier.fees[ATM_TYPES[i ^ 1]?.key ?? a.key]))
                 }
-                showDetails={isDesktop}
               />
             </motion.div>
           ))}
@@ -237,13 +260,11 @@ function AtmFeeCard({
   atm,
   fee,
   stacked,
-  showDetails,
 }: {
   atm: AtmType
   fee: Fee
   /** 由父级按「同一行」统一决定，保证并排两张卡片排布一致、无空白 */
   stacked: boolean
-  showDetails: boolean
 }) {
   const verdict = STATUS_VERDICT[fee.s]
   const color = STATUS_CSSVAR[fee.s]
@@ -278,7 +299,7 @@ function AtmFeeCard({
           status={fee.s}
           note={fee.n}
           contextLabel={atm.label}
-          showDetails={showDetails}
+          showDetails={false}
           className="shrink-0"
         />
       </div>
