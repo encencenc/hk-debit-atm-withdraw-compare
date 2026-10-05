@@ -335,7 +335,7 @@ export const BANKS: Bank[] = [
             fees: {
               hkBankTong: { s: F.Fee, n: '每次25港元' },
               hkHSBCHS: { s: F.Free },
-              macauBankTong: { s: F.Fee, n: '汇丰ATM每次20港元 + 1% FTF<br>其余ATM每次40港元 + 1% FTF' },
+              macauBankTong: { s: F.Fee, n: '每次40港元 + 1% FTF' },
               macauOther: { s: F.Fee, n: '汇丰ATM每次20港元 + 1% FTF<br>其余ATM每次40港元 + 1% FTF' },
               mainland: { s: F.Fee, n: '汇丰ATM每次20港元 + 1% FTF<br>其余ATM每次40港元 + 1% FTF' },
               overseas: { s: F.Fee, n: '汇丰ATM每次20港元 + 1% FTF<br>其余ATM每次40港元 + 1% FTF' },
