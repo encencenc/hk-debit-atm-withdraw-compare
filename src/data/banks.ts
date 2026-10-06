@@ -465,7 +465,7 @@ export const BANKS: Bank[] = [
               hkBankTong: { s: F.Free },
               hkHSBCHS: { s: F.Fee, n: '每次30港元' },
               macauBankTong: { s: F.Free },
-              macauOther: { s: F.Ftf, n: '免手续费但有 FTF' },
+              macauOther: { s: F.Ftf, n: '每次收取1.95% FTF' },
               mainland: { s: F.Free },
               overseas: {
                 s: F.Currency,
@@ -818,8 +818,8 @@ export const BANKS: Bank[] = [
             fees: {
               hkBankTong: { s: F.Free },
               hkHSBCHS: { s: F.Free },
-              macauBankTong: { s: F.Ftf, n: '免手续费但有FTF' },
-              macauOther: { s: F.Ftf, n: '免手续费但有FTF' },
+              macauBankTong: { s: F.Ftf, n: '每次收取1.95% FTF' },
+              macauOther: { s: F.Ftf, n: '每次收取1.95% FTF' },
               mainland: { s: F.Free },
               overseas: {
                 s: F.Currency,
@@ -992,13 +992,13 @@ export const BANKS: Bank[] = [
             label: '所有客户',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee },
-              macauBankTong: { s: F.Ftf, n: '免手续费但有FTF' },
-              macauOther: { s: F.Ftf, n: '免手续费但有FTF' },
+              hkHSBCHS: { s: F.Fee, n: '每笔交易金额2.4%' },
+              macauBankTong: { s: F.Ftf, n: '在ATM选择以当地货币入账（EDC）：每次收取1.95% FTF<br>在ATM选择以港币入账（DCC）：每笔金额2.4%' },
+              macauOther: { s: F.Ftf, n: '在ATM选择以当地货币入账（EDC）：每次收取1.95% FTF<br>在ATM选择以港币入账（DCC）：每笔金额2.4%' },
               mainland: { s: F.Free },
               overseas: {
                 s: F.Currency,
-                n: '仅限支援货币：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元、泰铢<br>其余币种收取 1.95% FTF',
+                n: '仅限如下支援货币可免费：港元、美元、人民币、澳元、加元、瑞士法郎、欧元、英镑、日元、新西兰元、新加坡元、泰铢<br>为支援货币且在ATM选择以当地货币入账（EDC）：免费<br>非支援货币在ATM选择以当地货币入账（EDC）：每次收取1.95% FTF<br>在ATM选择以港元入账（DCC）：每笔金额2.4%',
               },
             },
           },

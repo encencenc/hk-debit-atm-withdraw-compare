@@ -88,7 +88,7 @@ export function BankWizardMobile({
             <div className="grid max-h-[292px] grid-cols-2 gap-1.5 overflow-y-auto overscroll-contain">
               {filtered.map((b) => {
                 const sel = picked && b.id === bank.id
-                const tierCount = b.cardTypes.reduce((n, c) => n + c.tiers.length, 0)
+                const tierCount = new Set(b.cardTypes.flatMap((c) => c.tiers.map((t) => t.label))).size
                 return (
                   <button
                     key={b.id}
@@ -110,7 +110,7 @@ export function BankWizardMobile({
                         {b.name}
                       </span>
                       <span className="mt-0.5 truncate text-[10.5px] text-mut">
-                        {b.cardTypes.length} 种卡 · {tierCount} 个户口
+                        {b.cardTypes.length} 种卡 · {tierCount} 种户口类型
                       </span>
                     </span>
                     {sel && <Icon name="check" size={13} className="absolute right-1 top-1 text-ac" />}

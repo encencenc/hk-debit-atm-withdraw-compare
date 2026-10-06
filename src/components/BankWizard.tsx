@@ -103,7 +103,7 @@ export function BankWizard() {
           <div className="grid max-h-[400px] grid-cols-2 gap-2 overflow-y-auto pr-1">
             {filtered.map((b) => {
               const sel = b.id === bank.id
-              const tierCount = b.cardTypes.reduce((n, c) => n + c.tiers.length, 0)
+              const tierCount = new Set(b.cardTypes.flatMap((c) => c.tiers.map((t) => t.label))).size
               return (
                 <button
                   key={b.id}
@@ -122,7 +122,7 @@ export function BankWizard() {
                       {b.name}
                     </span>
                     <span className="mt-0.5 truncate text-[11px] text-mut">
-                      {b.cardTypes.length} 种卡 · {tierCount} 个户口
+                      {b.cardTypes.length} 种卡 · {tierCount} 种户口类型
                     </span>
                   </span>
                   {sel && (
