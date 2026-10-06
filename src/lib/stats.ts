@@ -21,3 +21,12 @@ export function tierSummary(tier: Tier) {
     na: statuses.filter((s) => s === FeeStatus.NotApplicable).length,
   }
 }
+
+/** 户口按钮旁的提示：完全免费 X/6，有限定免费时追加 · 限定免费 Y/6 */
+export function tierHint(tier: Tier) {
+  const { free, conditional } = tierSummary(tier)
+  const total = ATM_TYPES.length
+  return conditional > 0
+    ? `完全免费 ${free}/${total} · 限定免费 ${conditional}/${total}`
+    : `完全免费 ${free}/${total}`
+}

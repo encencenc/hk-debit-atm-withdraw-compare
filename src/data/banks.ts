@@ -214,7 +214,7 @@ export const BANKS: Bank[] = [
             label: 'Premium理财/优先理财/优先私人理财/私人银行',
             fees: {
               hkBankTong: { s: F.Free },
-              hkHSBCHS: { s: F.Fee, n: '每次25港元' },
+              hkHSBCHS: { s: F.Free },
               macauBankTong: { s: F.Free },
               macauOther: { s: F.Ftf, n: '免手续费但有 0.95% FTF' },
               mainland: {
@@ -305,7 +305,6 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Limited, n: '仅汇丰恒生ATM免费<br>其余每次40港元' },
               overseas: { s: F.Limited, n: '仅汇丰ATM免费<br>其余每次40港元' },
             },
-            note: '不含ATM Fee',
           },
           {
             label: '卓越理财',
@@ -317,7 +316,6 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Free },
               overseas: { s: F.Free },
             },
-            note: '不含ATM Fee',
           },
           {
             label: '卓越理财尊尚 / 环球私人银行',
@@ -329,7 +327,7 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Free },
               overseas: { s: F.Free },
             },
-            note: '包含ATM Fee',
+            note: '豁免（如有）ATM所属银行ATM机具费用',
           },
         ],
       },
@@ -347,7 +345,6 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Fee, n: '汇丰恒生ATM每次20港元<br>其余每次50港元' },
               overseas: { s: F.Fee, n: '汇丰ATM每次20港元<br>其余每次50港元' },
             },
-            note: '不含ATM Fee',
           },
           {
             label: '卓越理财 / 卓越理财尊尚 / 环球私人银行',
@@ -359,7 +356,6 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Limited, n: '仅汇丰恒生ATM免费<br>其余每次50港元' },
               overseas: { s: F.Limited, n: '仅汇丰ATM免费<br>其余每次50港元' },
             },
-            note: '不含ATM Fee',
           },
         ],
       },
@@ -618,7 +614,6 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Limited, n: '仅汇丰恒生ATM免费<br>其余每次40港元' },
               overseas: { s: F.Limited, n: '仅汇丰ATM免费<br>其余每次40港元' },
             },
-            note: '不含ATM Fee',
           },
           {
             label: '优越理财',
@@ -630,7 +625,6 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Free },
               overseas: { s: F.Free },
             },
-            note: '不含ATM Fee',
           },
           {
             label: '优越私人理财 / 私人银行',
@@ -642,7 +636,7 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Free },
               overseas: { s: F.Free },
             },
-            note: '包含ATM Fee',
+            note: '豁免（如有）ATM所属银行ATM机具费用',
           },
         ],
       },
@@ -660,7 +654,6 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Fee, n: '汇丰恒生ATM每次20港元<br>其余每次50港元' },
               overseas: { s: F.Fee, n: '汇丰ATM每次20港元<br>其余每次50港元' },
             },
-            note: '不含ATM Fee',
           },
           {
             label: '优越理财 / 优越私人理财 / 私人银行',
@@ -672,7 +665,6 @@ export const BANKS: Bank[] = [
               mainland: { s: F.Limited, n: '仅汇丰恒生ATM免费<br>其余每次50港元' },
               overseas: { s: F.Limited, n: '仅汇丰ATM免费<br>其余每次50港元' },
             },
-            note: '不含ATM Fee',
           },
         ],
       },
@@ -945,7 +937,7 @@ export const BANKS: Bank[] = [
           {
             label: '所有客户',
             fees: {
-              hkBankTong: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
+              hkBankTong: { s: F.NotApplicable, n: '该卡仅支持在本行支持人民币提款服务的ATM免费提款人民币' },
               hkHSBCHS: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
               macauBankTong: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },
               macauOther: { s: F.NotApplicable, n: '该卡不支持在该类型ATM提款' },

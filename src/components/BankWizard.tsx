@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import { ATM_TYPES, BANKS, type AtmType, type Fee } from '../data/banks'
 import { useIsDesktop } from '../hooks/useMediaQuery'
 import { STATUS_CSSVAR, STATUS_VERDICT, noteLines } from '../lib/status'
-import { tierSummary } from '../lib/stats'
+import { tierHint, tierSummary } from '../lib/stats'
 import { AtmIcon } from './AtmIcon'
 import { BankLogo } from './BankLogo'
 import { BankWizardMobile } from './BankWizardMobile'
@@ -103,7 +103,7 @@ export function BankWizard() {
           <div className="grid max-h-[400px] grid-cols-2 gap-2 overflow-y-auto pr-1">
             {filtered.map((b) => {
               const sel = b.id === bank.id
-              const tierCount = new Set(b.cardTypes.flatMap((c) => c.tiers.map((t) => t.label))).size
+              const tierCount = Math.max(...b.cardTypes.map((c) => c.tiers.length))
               return (
                 <button
                   key={b.id}
@@ -163,7 +163,7 @@ export function BankWizard() {
                 key={t.label}
                 group="tier"
                 label={t.label}
-                hint={`免费 ${tierSummary(t).free}/${ATM_TYPES.length}`}
+                hint={tierHint(t)}
                 active={i === tierIndex}
                 onClick={() => setTierIndex(i)}
               />
@@ -186,7 +186,6 @@ export function BankWizard() {
               </div>
               <p className="mt-1 text-[13px] text-mut">
                 {tier.label}
-                {tier.note && <span> · 备注：{tier.note}</span>}
               </p>
             </div>
           </div>
@@ -205,6 +204,11 @@ export function BankWizard() {
             <Icon name="atm" size={18} className="text-ac" />
             <h3 className="text-sm font-bold tracking-tight">各类 ATM 提款收费明细</h3>
           </div>
+          {tier.note && (
+            <span className="rounded-md border border-ac/50 bg-acsoft px-2 py-1 text-[11.5px] font-semibold text-ac">
+              {tier.note}
+            </span>
+          )}
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

@@ -2,7 +2,7 @@ import { useId, useState, type RefObject } from 'react'
 import { motion } from 'motion/react'
 import { ATM_TYPES, type AtmType, type Bank, type CardType, type Fee, type Tier } from '../data/banks'
 import { STATUS_CSSVAR, STATUS_VERDICT } from '../lib/status'
-import { tierSummary } from '../lib/stats'
+import { tierHint, tierSummary } from '../lib/stats'
 import { AtmIcon } from './AtmIcon'
 import { BankLogo } from './BankLogo'
 import { Icon } from './Icon'
@@ -88,7 +88,7 @@ export function BankWizardMobile({
             <div className="grid max-h-[292px] grid-cols-2 gap-1.5 overflow-y-auto overscroll-contain">
               {filtered.map((b) => {
                 const sel = picked && b.id === bank.id
-                const tierCount = new Set(b.cardTypes.flatMap((c) => c.tiers.map((t) => t.label))).size
+                const tierCount = Math.max(...b.cardTypes.map((c) => c.tiers.length))
                 return (
                   <button
                     key={b.id}
@@ -148,7 +148,7 @@ export function BankWizardMobile({
                       key={t.label}
                       group="tier"
                       label={t.label}
-                      hint={`${tierSummary(t).free}/${ATM_TYPES.length} 类免费`}
+                      hint={tierHint(t)}
                       active={i === tierIndex}
                       onClick={() => {
                         pickTier(i)
@@ -190,6 +190,11 @@ export function BankWizardMobile({
               </h3>
               <span className="text-[11.5px] text-faint">点按查看具体条件</span>
             </div>
+            {tier.note && (
+              <p className="mx-4 mb-2 rounded-md border border-ac/50 bg-acsoft px-2 py-1 text-[11.5px] font-semibold text-ac">
+                {tier.note}
+              </p>
+            )}
             <motion.ul
               key={signature}
               initial={{ opacity: 0.4 }}
@@ -250,7 +255,6 @@ function ResultSummary({
         </div>
         {onEdit && <MobileEditButton onClick={onEdit} />}
       </div>
-      {tier.note && <p className="mt-2 text-[12px] leading-relaxed text-mut">备注：{tier.note}</p>}
 
       <div className="mt-3 border-t border-bd2 pt-3">
         <p className="text-[13.5px] font-semibold leading-snug text-tx">
